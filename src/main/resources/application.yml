@@ -23,6 +23,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+#  data:
+#    web:
+#      pageable:
+#        one-indexed-parameters: true
 
 logging:
   level:

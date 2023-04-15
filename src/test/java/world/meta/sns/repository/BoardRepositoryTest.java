@@ -1,19 +1,17 @@
 package world.meta.sns.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
+import world.meta.sns.dto.BoardDto;
 import world.meta.sns.entity.Board;
-import world.meta.sns.entity.Member;
+import world.meta.sns.form.BoardForm;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -26,7 +24,27 @@ public class BoardRepositoryTest {
     @Test
     public void boardTest() throws Exception {
 
-        Member member = memberRepository.findByMemberName("member1");
+        String title = "title1";
+        Board board = boardRepository.findFetchJoinByBoardTitle(title);
+
+        assertThat(board.getTitle()).isEqualTo(title);
+    }
+
+    @Test
+    public void findAll() throws Exception {
+
+        // given
+        BoardForm boardForm = new BoardForm();
+        boardForm.setTitle("title2");
+
+        // when
+        Page<BoardDto> result = boardRepository.findAll(boardForm, PageRequest.of(1, 2));
+
+        for (BoardDto boardDto : result) {
+            log.info("boardDto = {}", boardDto);
+        }
+
+        // then
     }
 
 }
