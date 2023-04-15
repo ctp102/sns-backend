@@ -5,9 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import world.meta.sns.entity.Board;
-import world.meta.sns.dto.BoardDto;
-import world.meta.sns.form.BoardForm;
-import world.meta.sns.service.BoardService;
+import world.meta.sns.dto.board.BoardDto;
+import world.meta.sns.form.board.BoardForm;
+import world.meta.sns.service.board.BoardService;
 
 @RestController
 @RequiredArgsConstructor

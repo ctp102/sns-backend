@@ -1,6 +1,7 @@
 package world.meta.sns.entity;
 
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,6 +21,7 @@ public class Member extends BaseTimeEntity {
     private String memberName;
 
     @OneToMany(mappedBy = "member")
+    @BatchSize(size = 500)
     private List<Board> boards;
 
     public Member(String memberName) {

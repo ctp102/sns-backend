@@ -1,4 +1,4 @@
-package world.meta.sns.dto;
+package world.meta.sns.dto.board;
 
 import lombok.Data;
 import world.meta.sns.entity.Board;

@@ -1,14 +1,13 @@
-package world.meta.sns.repository;
+package world.meta.sns.repository.member;
 
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.entity.Member;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -33,6 +32,17 @@ class MemberRepositoryTest {
             assertThat(findMember.getMemberName()).isEqualTo(saveMember.getMemberName());
             assertThat(findMember).isEqualTo(saveMember);
         });
+    }
+
+    @Test
+    public void oneToMany() throws Exception {
+
+        // given
+
+
+        // when
+
+        // then
     }
 
 }

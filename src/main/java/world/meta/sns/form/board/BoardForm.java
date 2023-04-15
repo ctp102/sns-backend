@@ -1,4 +1,4 @@
-package world.meta.sns.form;
+package world.meta.sns.form.board;
 
 import lombok.Data;
 

@@ -7,8 +7,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import world.meta.sns.entity.Board;
 import world.meta.sns.entity.Member;
-import world.meta.sns.repository.BoardRepository;
-import world.meta.sns.repository.MemberRepository;
+import world.meta.sns.enums.Category;
+import world.meta.sns.repository.board.BoardRepository;
+import world.meta.sns.repository.member.MemberRepository;
 
 @SpringBootApplication
 @RequiredArgsConstructor
@@ -22,15 +23,21 @@ public class SnsApplication {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void init() {
+    public void init() throws InterruptedException {
 
-        // member
-        Member member = new Member("member1");
-        memberRepository.save(member);
+        for (int i = 1; i <= 10; i++) {
+            // member
+            Member member = new Member("member" + i);
+            memberRepository.save(member);
 
-        // board
-        Board board = new Board("title1", "content1", member);
-        boardRepository.save(board);
+            for (int j = 1; j <= 5; j++) {
+                // board
+                Board board = new Board("title" + j, "content" + j, Category.PUBLIC, member);
+                boardRepository.save(board);
+//                Thread.sleep(500);
+            }
+        }
+
     }
 
 }

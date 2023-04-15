@@ -1,4 +1,4 @@
-package world.meta.sns.repository;
+package world.meta.sns.repository.board;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

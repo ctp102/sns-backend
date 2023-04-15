@@ -1,4 +1,4 @@
-package world.meta.sns.service;
+package world.meta.sns.service.board;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -7,10 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.entity.Board;
 import world.meta.sns.entity.Member;
-import world.meta.sns.dto.BoardDto;
-import world.meta.sns.form.BoardForm;
-import world.meta.sns.repository.BoardRepository;
-import world.meta.sns.repository.MemberRepository;
+import world.meta.sns.dto.board.BoardDto;
+import world.meta.sns.form.board.BoardForm;
+import world.meta.sns.repository.board.BoardRepository;
+import world.meta.sns.repository.member.MemberRepository;
+import world.meta.sns.service.member.MemberService;
 
 @Service
 @RequiredArgsConstructor

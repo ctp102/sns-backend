@@ -2,6 +2,7 @@ package world.meta.sns.entity;
 
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.BatchSize;
 import world.meta.sns.enums.Category;
 
 import javax.persistence.*;
@@ -29,6 +30,7 @@ public class Board extends BaseTimeEntity {
     private Member member;
 
     @OneToMany(mappedBy = "board")
+    @BatchSize(size = 500)
     private List<Comment> comments;
 
     public Board(String title, String content, Category category, Member member) {
@@ -56,4 +58,5 @@ public class Board extends BaseTimeEntity {
             this.category = board.getCategory();
         }
     }
+
 }

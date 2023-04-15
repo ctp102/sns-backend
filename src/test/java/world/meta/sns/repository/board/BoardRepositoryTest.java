@@ -1,4 +1,4 @@
-package world.meta.sns.repository;
+package world.meta.sns.repository.board;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -7,9 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import world.meta.sns.dto.BoardDto;
+import world.meta.sns.dto.board.BoardDto;
 import world.meta.sns.entity.Board;
-import world.meta.sns.form.BoardForm;
+import world.meta.sns.form.board.BoardForm;
+import world.meta.sns.repository.board.BoardRepository;
+import world.meta.sns.repository.member.MemberRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,8 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class BoardRepositoryTest {
 
-    @Autowired BoardRepository boardRepository;
-    @Autowired MemberRepository memberRepository;
+    @Autowired
+    BoardRepository boardRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     public void boardTest() throws Exception {

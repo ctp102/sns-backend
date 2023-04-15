@@ -1,9 +1,9 @@
-package world.meta.sns.repository;
+package world.meta.sns.repository.board;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import world.meta.sns.dto.BoardDto;
-import world.meta.sns.form.BoardForm;
+import world.meta.sns.dto.board.BoardDto;
+import world.meta.sns.form.board.BoardForm;
 
 public interface BoardRepositoryCustom {
 
