@@ -27,12 +27,12 @@ public class BoardRestController {
     }
 
     @PostMapping("/api/v1/boards/members/{memberId}")
-    public void saveBoard(@PathVariable("memberId") Long memberId, Board board) {
+    public void saveBoard(@PathVariable("memberId") Long memberId, @RequestBody Board board) {
         boardService.saveBoard(memberId, board);
     }
 
     @PutMapping("/api/v1/boards/{boardId}")
-    public void updateBoard(@PathVariable("boardId") Long boardId, Board board) {
+    public void updateBoard(@PathVariable("boardId") Long boardId, @RequestBody Board board) {
         boardService.updateBoard(boardId, board);
     }
 

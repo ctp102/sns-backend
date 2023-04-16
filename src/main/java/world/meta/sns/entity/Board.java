@@ -15,21 +15,24 @@ import java.util.List;
 public class Board extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
     private Long id;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 500)
     private List<Comment> comments;
 
@@ -45,7 +48,10 @@ public class Board extends BaseTimeEntity {
         comment.setBoard(this);
     }
 
+    // BoardRequestDto를 만들어서 넣던데 왜 이렇게 하지?
+    // 여기서 null 체크를 하는게 맞을까?
     public void update(Board board) {
+
         if (StringUtils.isNotBlank(board.getTitle())) {
             this.title = board.getTitle();
         }

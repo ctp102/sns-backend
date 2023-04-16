@@ -2,8 +2,10 @@ package world.meta.sns.dto.board;
 
 import lombok.Data;
 import world.meta.sns.entity.Board;
+import world.meta.sns.entity.Comment;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class BoardDto {
@@ -11,6 +13,8 @@ public class BoardDto {
     private String title;
     private String content;
     private String writer;
+    private List<Comment> comments;
+
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
@@ -25,6 +29,7 @@ public class BoardDto {
         this.updatedDate = updatedDate;
     }
 
+    // TODO: [2023-04-16] 빌더 패턴으로 변경하기
     public static BoardDto from(Board board) {
         BoardDto boardDto = new BoardDto();
         boardDto.setTitle(board.getTitle());

@@ -83,7 +83,7 @@ public class BoardService {
 
         Board foundBoard = boardRepository.findById(boardId).orElseThrow();
 
-        if (foundBoard.getId() != boardId) {
+        if (!foundBoard.getId().equals(boardId)) {
             throw new IllegalStateException("해당 게시글이 존재하지 않습니다.");
         }
 
