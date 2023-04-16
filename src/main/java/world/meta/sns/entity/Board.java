@@ -1,5 +1,7 @@
 package world.meta.sns.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
@@ -10,7 +12,6 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseTimeEntity {
 
@@ -28,6 +29,7 @@ public class Board extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;

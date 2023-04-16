@@ -1,25 +1,29 @@
 package world.meta.sns.dto.board;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import world.meta.sns.dto.comment.CommentDto;
 import world.meta.sns.entity.Board;
 import world.meta.sns.entity.Comment;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class BoardDto {
 
     private String title;
     private String content;
     private String writer;
-    private List<Comment> comments;
+//    private List<Comment> comments;
+    private List<CommentDto> commentDtos;
 
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
-
-    public BoardDto() {
-    }
 
     public BoardDto(String title, String content, String writer, LocalDateTime createdDate, LocalDateTime updatedDate) {
         this.title = title;
@@ -29,15 +33,15 @@ public class BoardDto {
         this.updatedDate = updatedDate;
     }
 
-    // TODO: [2023-04-16] 빌더 패턴으로 변경하기
     public static BoardDto from(Board board) {
-        BoardDto boardDto = new BoardDto();
-        boardDto.setTitle(board.getTitle());
-        boardDto.setContent(board.getContent());
-        boardDto.setWriter(board.getMember().getMemberName());
-        boardDto.setCreatedDate(board.getCreatedDate());
-        boardDto.setUpdatedDate(board.getUpdatedDate());
-        return boardDto;
+        return BoardDto.builder()
+                .title(board.getTitle())
+                .content(board.getContent())
+                .writer(board.getMember().getMemberName())
+                .commentDtos(new ArrayList<>())
+                .createdDate(board.getCreatedDate())
+                .updatedDate(board.getUpdatedDate())
+                .build();
     }
 
 }

@@ -8,9 +8,8 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-@ToString
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Comment extends BaseTimeEntity {
 

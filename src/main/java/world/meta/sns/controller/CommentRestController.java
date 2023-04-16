@@ -12,8 +12,6 @@ public class CommentRestController {
 
     private final CommentService commentService;
 
-
-
     // TODO: [2023-04-16] 원래 세션에서 memberId를 가져와야 함. 그게 구현이 안되어 있으므로 RequestParam으로 잠시 받음.
     @PostMapping("/api/v1/boards/{boardId}/comments")
     public void createComment(@PathVariable("boardId") Long boardId, @RequestParam("memberId") Long memberId, @RequestBody CommentRequestDto commentRequestDto) {

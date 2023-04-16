@@ -1,5 +1,7 @@
 package world.meta.sns.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
@@ -8,7 +10,6 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Member extends BaseTimeEntity {
@@ -20,6 +21,7 @@ public class Member extends BaseTimeEntity {
 
     private String memberName;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "member")
     @BatchSize(size = 500)
     private List<Board> boards;

@@ -1,6 +1,7 @@
 package world.meta.sns;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -13,6 +14,9 @@ import world.meta.sns.repository.board.BoardRepository;
 import world.meta.sns.repository.comment.CommentRepository;
 import world.meta.sns.repository.member.MemberRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 @SpringBootApplication
 @RequiredArgsConstructor
 public class SnsApplication {
@@ -20,6 +24,9 @@ public class SnsApplication {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public static void main(String[] args) {
         SpringApplication.run(SnsApplication.class, args);
@@ -61,6 +68,9 @@ public class SnsApplication {
 
             commentRepository.save(childComment);
         }
+
+//        entityManager.flush();
+//        entityManager.clear();
     }
 
 }

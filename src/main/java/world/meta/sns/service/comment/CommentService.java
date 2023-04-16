@@ -1,6 +1,7 @@
 package world.meta.sns.service.comment;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.dto.comment.CommentRequestDto;
@@ -14,23 +15,12 @@ import world.meta.sns.repository.member.MemberRepository;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
-
-    public void saveComment(Long boardId, Long memberId, Comment comment) {
-        // 1. board 존재 유무 체크
-        Board foundBoard = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid board id"));
-
-        Comment parentComment = null;
-        // 2. 자식 댓글인지 부모 댓글인지 체크
-            // 2-1. 자식 댓글인 경우 부모 댓글의 boardId와 자식 댓글의 boardId가 일치하는지 체크
-
-
-    }
 
     public void saveComment(CommentRequestDto requestDto) {
         // 1. board 존재 유무 체크
@@ -67,6 +57,8 @@ public class CommentService {
         }
 
         commentRepository.save(comment);
+
+        log.info("comment: {}", comment);
     }
 
     public void deleteComment(Long commentId) {

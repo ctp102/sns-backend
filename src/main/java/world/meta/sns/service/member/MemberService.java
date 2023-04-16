@@ -12,9 +12,7 @@ import world.meta.sns.entity.Member;
 import world.meta.sns.form.member.MemberForm;
 import world.meta.sns.repository.member.MemberRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +37,7 @@ public class MemberService {
         List<Board> boards = member.getBoards();
         log.info("boards: {}", boards);
 
-
-        return null;
+        return MemberDto.from(member);
     }
 
 }
