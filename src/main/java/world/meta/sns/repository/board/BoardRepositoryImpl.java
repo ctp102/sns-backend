@@ -31,7 +31,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 )
                 .from(board)
                 .leftJoin(board.member, member)
-                .where(searchCondition(boardForm))
+                .where(
+                        equalsWriter(boardForm.getWriter()),
+                        equalsTitle(boardForm.getTitle()),
+                        betweenCreatedDate(boardForm.getStartDate(), boardForm.getEndDate())
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -43,7 +47,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 )
                 .from(board)
                 .leftJoin(board.member, member)
-                .where(searchCondition(boardForm))
+                .where(
+                        equalsWriter(boardForm.getWriter()),
+                        equalsTitle(boardForm.getTitle()),
+                        betweenCreatedDate(boardForm.getStartDate(), boardForm.getEndDate())
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchCount();
