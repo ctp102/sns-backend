@@ -1,5 +1,6 @@
 package world.meta.sns.dto.board;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class BoardDto {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
+    @QueryProjection
     public BoardDto(Long boardId, String title, String content, String writer, LocalDateTime createdDate, LocalDateTime updatedDate) {
         this.boardId = boardId;
         this.title = title;

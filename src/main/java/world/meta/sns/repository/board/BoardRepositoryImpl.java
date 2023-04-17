@@ -10,13 +10,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import world.meta.sns.dto.board.BoardDto;
+import world.meta.sns.dto.board.QBoardDto;
 import world.meta.sns.form.board.BoardForm;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static world.meta.sns.entity.QBoard.board;
-import static world.meta.sns.entity.QMember.member;
+import static world.meta.sns.entity.QMember.*;
 
 @RequiredArgsConstructor
 public class BoardRepositoryImpl implements BoardRepositoryCustom {
@@ -26,9 +27,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     public Page<BoardDto> findAll(BoardForm boardForm, Pageable pageable) {
 
         List<BoardDto> boardDtos = queryFactory
-                .select(Projections.constructor(
-                        BoardDto.class, board.id, board.title, board.content, member.memberName, board.createdDate, board.updatedDate)
-                )
+                .select(new QBoardDto(board.id, board.title, board.content, member.memberName, board.createdDate, board.updatedDate))
                 .from(board)
                 .leftJoin(board.member, member)
                 .where(
