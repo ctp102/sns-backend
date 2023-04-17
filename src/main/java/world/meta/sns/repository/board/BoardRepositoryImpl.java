@@ -27,7 +27,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
         List<BoardDto> boardDtos = queryFactory
                 .select(Projections.constructor(
-                        BoardDto.class, board.title, board.content, member.memberName, board.createdDate, board.updatedDate)
+                        BoardDto.class, board.id, board.title, board.content, member.memberName, board.createdDate, board.updatedDate)
                 )
                 .from(board)
                 .leftJoin(board.member, member)
@@ -43,7 +43,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         // TODO: [2023-04-15] Deprecated 된 메서드 사용하지 않기
         long totalCount = queryFactory
                 .select(Projections.constructor(
-                        BoardDto.class, board.title, board.content, member.memberName, board.createdDate, board.updatedDate)
+                        BoardDto.class, board.id, board.title, board.content, member.memberName, board.createdDate, board.updatedDate)
                 )
                 .from(board)
                 .leftJoin(board.member, member)
@@ -59,7 +59,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         return new PageImpl<>(boardDtos, pageable, totalCount);
     }
 
-    // or 처리하기 위함
+    // or 처리하기 위해 만들었는데 한계점이 존재
+    // 만약 title, writer 조건 검색 시 and가 아닌 각각의 or 조건으로 조회함
     public BooleanBuilder searchCondition(BoardForm boardForm) {
 
         BooleanBuilder builder = new BooleanBuilder();
