@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import world.meta.sns.dto.board.BoardRequestDto;
 import world.meta.sns.entity.Board;
 import world.meta.sns.dto.board.BoardDto;
 import world.meta.sns.form.board.BoardForm;
@@ -26,9 +27,10 @@ public class BoardRestController {
         return boardService.findBoard(boardId);
     }
 
-    @PostMapping("/api/v1/boards/members/{memberId}")
-    public void saveBoard(@PathVariable("memberId") Long memberId, @RequestBody Board board) {
-        boardService.saveBoard(memberId, board);
+    @PostMapping("/api/v1/boards")
+    public void saveBoard(@RequestBody BoardRequestDto requestDto) {
+        // TODO: [2023-04-18] response로 변환하기
+        boardService.saveBoard(requestDto);
     }
 
     @PutMapping("/api/v1/boards/{boardId}")

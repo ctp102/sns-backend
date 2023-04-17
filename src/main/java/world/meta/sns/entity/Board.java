@@ -1,10 +1,9 @@
 package world.meta.sns.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import world.meta.sns.dto.board.BoardRequestDto;
 import world.meta.sns.enums.Category;
 
 import javax.persistence.*;
@@ -13,6 +12,8 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Board extends BaseTimeEntity {
 
     @Id
@@ -64,6 +65,14 @@ public class Board extends BaseTimeEntity {
         if (board.getCategory() != null) {
             this.category = board.getCategory();
         }
+    }
+
+    public static Board from(BoardRequestDto boardRequestDto) {
+        return Board.builder()
+                .title(boardRequestDto.getTitle())
+                .content(boardRequestDto.getContent())
+                .category(boardRequestDto.getCategory())
+                .build();
     }
 
 }

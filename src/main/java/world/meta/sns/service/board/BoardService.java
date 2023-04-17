@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.dto.board.BoardDto;
+import world.meta.sns.dto.board.BoardRequestDto;
 import world.meta.sns.entity.Board;
 import world.meta.sns.entity.Member;
 import world.meta.sns.form.board.BoardForm;
@@ -68,7 +69,6 @@ public class BoardService {
         }
 
         BoardDto boardDto = BoardDto.from(foundBoard);
-
         BoardDto.setCommentDtos(foundBoard, boardDto);
 
         return boardDto;
@@ -83,7 +83,20 @@ public class BoardService {
      */
     public Board saveBoard(Long memberId, Board board) {
 
-        Member foundMember = memberRepository.findById(memberId).orElseThrow();
+        Member foundMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalStateException("해당 회원이 존재하지 않습니다."));
+
+        foundMember.addBoard(board);
+
+        return boardRepository.save(board);
+    }
+
+    public Board saveBoard(BoardRequestDto requestDto) {
+
+        Member foundMember = memberRepository.findById(requestDto.getMemberId())
+                .orElseThrow(() -> new IllegalStateException("해당 회원이 존재하지 않습니다."));
+
+        Board board = Board.from(requestDto);
         foundMember.addBoard(board);
 
         return boardRepository.save(board);
