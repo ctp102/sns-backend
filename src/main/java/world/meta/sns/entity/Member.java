@@ -21,7 +21,6 @@ public class Member extends BaseTimeEntity {
 
     private String memberName;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "member")
     @BatchSize(size = 500)
     private List<Board> boards;

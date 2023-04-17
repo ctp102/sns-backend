@@ -29,7 +29,6 @@ public class Board extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;

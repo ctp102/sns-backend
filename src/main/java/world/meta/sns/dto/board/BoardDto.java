@@ -39,6 +39,7 @@ public class BoardDto {
 
     public static BoardDto from(Board board) {
         return BoardDto.builder()
+                .boardId(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .writer(board.getMember().getMemberName())
@@ -48,6 +49,11 @@ public class BoardDto {
                 .build();
     }
 
+    /**
+     * 부모/자식 댓글 관계 조립
+     * @param board
+     * @param boardDto
+     */
     public static void setCommentDtos(Board board, BoardDto boardDto) {
 
         List<CommentDto> commentDtos = new ArrayList<>();
