@@ -61,8 +61,12 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardDto findBoard(Long boardId) {
 
-        Board foundBoard = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalStateException("해당 게시글이 존재하지 않습니다."));
+        Board foundBoard = boardRepository.findFetchJoinById(boardId);
+
+        if (foundBoard == null) {
+            throw new IllegalStateException("해당 게시글이 존재하지 않습니다.");
+        }
+
         BoardDto boardDto = BoardDto.from(foundBoard);
 
         BoardDto.setCommentDtos(foundBoard, boardDto);

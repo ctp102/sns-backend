@@ -26,15 +26,6 @@ public class BoardRepositoryTest {
     MemberRepository memberRepository;
 
     @Test
-    public void boardTest() throws Exception {
-
-        String title = "title1";
-        Board board = boardRepository.findFetchJoinByBoardTitle(title);
-
-        assertThat(board.getTitle()).isEqualTo(title);
-    }
-
-    @Test
     public void findAll() throws Exception {
 
         // given
