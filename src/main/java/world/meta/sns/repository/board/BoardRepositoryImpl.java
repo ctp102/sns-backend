@@ -31,11 +31,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 )
                 .from(board)
                 .leftJoin(board.member, member)
-                .where(
-                        equalsWriter(boardForm.getWriter()),
-                        equalsTitle(boardForm.getTitle()),
-                        betweenCreatedDate(boardForm.getStartDate(), boardForm.getEndDate())
-                )
+                .where(searchCondition(boardForm))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -47,16 +43,36 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 )
                 .from(board)
                 .leftJoin(board.member, member)
-                .where(
-                        equalsWriter(boardForm.getWriter()),
-                        equalsTitle(boardForm.getTitle()),
-                        betweenCreatedDate(boardForm.getStartDate(), boardForm.getEndDate())
-                )
+                .where(searchCondition(boardForm))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchCount();
 
         return new PageImpl<>(boardDtos, pageable, totalCount);
+    }
+
+    // or 처리하기 위함
+    public BooleanBuilder searchCondition(BoardForm boardForm) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (StringUtils.isNotBlank(boardForm.getTitle())) {
+            builder.or(board.title.eq(boardForm.getTitle()));
+        }
+
+        if (StringUtils.isNotBlank(boardForm.getWriter())) {
+            builder.or(member.memberName.eq(boardForm.getWriter()));
+        }
+
+        if (boardForm.getStartDate() != null) {
+            builder.or(board.createdDate.goe(boardForm.getStartDate()));
+        }
+
+        if (boardForm.getEndDate() != null) {
+            builder.or(board.createdDate.loe(boardForm.getEndDate()));
+        }
+
+        return builder;
     }
 
     public BooleanExpression equalsWriter(String writer) {
