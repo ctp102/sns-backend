@@ -8,7 +8,11 @@ import world.meta.sns.dto.board.BoardRequestDto;
 import world.meta.sns.entity.Board;
 import world.meta.sns.dto.board.BoardDto;
 import world.meta.sns.form.board.BoardForm;
+import world.meta.sns.mvc.view.CustomResponse;
+import world.meta.sns.mvc.view.CustomResponseCodes;
 import world.meta.sns.service.board.BoardService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,9 +21,15 @@ public class BoardRestController {
     private final BoardService boardService;
 
     // TODO: [2023-04-15] ResponseEntity 또는 커스텀 Response 생성해서 처리하기
+//    @GetMapping("/api/v1/boards")
+//    public Page<BoardDto> findBoardList(BoardForm boardForm, Pageable pageable) {
+//        return boardService.findBoardList(boardForm, pageable);
+//    }
+
     @GetMapping("/api/v1/boards")
-    public Page<BoardDto> findBoardList(BoardForm boardForm, Pageable pageable) {
-        return boardService.findBoardList(boardForm, pageable);
+    public CustomResponse findBoardList(BoardForm boardForm, Pageable pageable) {
+        Page<BoardDto> items = boardService.findBoardList(boardForm, pageable);
+        return new CustomResponse.Builder().addItems(items).build();
     }
 
     @GetMapping("/api/v1/boards/{boardId}")
