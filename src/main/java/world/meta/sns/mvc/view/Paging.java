@@ -24,7 +24,7 @@ public class Paging {
 
     public static Paging from(Page<?> page) {
         return builder()
-            .pageNo(page.getPageable().getPageNumber())
+            .pageNo(page.getPageable().getPageNumber() + 1)
             .pageSize(page.getPageable().getPageSize())
             .totalElements(page.getTotalElements())
             .totalPage(page.getTotalPages())
