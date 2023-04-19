@@ -28,7 +28,7 @@ public class CustomResponse {
             return this;
         }
 
-        public Builder addItems(List<?> items) {
+        public Builder addItems(Collection<?> items) {
             this.data.put("items", items != null ? items: new ArrayList<>());
             return this;
         }
@@ -57,10 +57,9 @@ public class CustomResponse {
             return this;
         }
 
-        public Builder addResultCodes(CustomResponseCodes responseCodes) {
-            this.responseCodes = responseCodes;
-            return this;
-        }
+//        public Builder addResultCodes(CustomResponseCodes customResponseCodes) {
+//            return customResponseCodes != null ? this.addData("resultType", customResponseCodes.getClass().getSimpleName()) : this;
+//        }
 
         public CustomResponse build() {
             return new CustomResponse(this);
