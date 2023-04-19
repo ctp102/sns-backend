@@ -1,9 +1,8 @@
 package world.meta.sns.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import world.meta.sns.dto.member.MemberRequestDto;
 
 import javax.persistence.*;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class Member extends BaseTimeEntity {
 
     @Id
@@ -32,6 +32,12 @@ public class Member extends BaseTimeEntity {
     public void addBoard(Board board) {
         this.boards.add(board);
         board.setMember(this);
+    }
+
+    public static Member from(MemberRequestDto requestDto) {
+        return Member.builder()
+                .memberName(requestDto.getMemberName())
+                .build();
     }
 
 }

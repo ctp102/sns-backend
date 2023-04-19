@@ -1,6 +1,5 @@
 package world.meta.sns.dto.board;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import world.meta.sns.enums.Category;
@@ -13,6 +12,5 @@ public class BoardRequestDto {
     private String title;
     private String content;
     private Category category;
-
 
 }
