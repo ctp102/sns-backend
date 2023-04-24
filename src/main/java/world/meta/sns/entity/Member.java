@@ -2,6 +2,7 @@ package world.meta.sns.entity;
 
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
 import world.meta.sns.dto.member.MemberRequestDto;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@DynamicUpdate
 public class Member extends BaseTimeEntity {
 
     @Id
@@ -32,6 +34,10 @@ public class Member extends BaseTimeEntity {
     public void addBoard(Board board) {
         this.boards.add(board);
         board.setMember(this);
+    }
+
+    public void update(MemberRequestDto requestDto) {
+        this.memberName = requestDto.getMemberName();
     }
 
     public static Member from(MemberRequestDto requestDto) {

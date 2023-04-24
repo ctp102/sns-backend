@@ -37,13 +37,26 @@ public class MemberRestController {
     public CustomResponse saveMember(@RequestBody MemberRequestDto requestDto) {
 
         Member item = memberService.saveMember(requestDto);
-        
-        // TODO: [2023-04-20] save 성공 시, 아닐 시 나눠서 처리 
-//        if (item == null) {
-//            return new CustomResponse.Builder().add(CustomResponseCodes.FAIL).build();
-//        }
 
         return new CustomResponse.Builder().addItems(item).build();
+    }
+
+    @PutMapping("/api/v1/members/{memberId}")
+    public CustomResponse updateMember(@PathVariable("memberId") Long memberId, @RequestBody MemberRequestDto requestDto) {
+
+        Member item = memberService.updateMember(memberId, requestDto);
+        
+        // TODO: [2023-04-25] item 결과에 따라 response 응답 코드를 다르게 줘야함 
+
+        return new CustomResponse.Builder().addItems(item).build();
+    }
+
+    @DeleteMapping("/api/v1/members/{memberId}")
+    public CustomResponse deleteMember(@PathVariable("memberId") Long memberId) {
+
+        memberService.deleteMember(memberId);
+
+        return new CustomResponse.Builder().build();
     }
 
 }

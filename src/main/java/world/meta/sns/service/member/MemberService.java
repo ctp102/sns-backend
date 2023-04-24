@@ -36,22 +36,41 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberDto findMember(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
+        Member member = memberRepository.findById(memberId).orElse(null);
+
+        if (member == null) {
+            return null;
+        }
+
         return MemberDto.from(member);
     }
 
     public Member saveMember(MemberRequestDto requestDto) {
+
+        Long count = memberRepository.countMemberByMemberName(requestDto.getMemberName());
+        if (count > 0) {
+            throw new IllegalStateException("이미 존재하는 회원입니다."); // TODO: [2023-04-25] Exception 공통 처리하기. 현재는 500 에러뜬다
+        }
+
         Member member = Member.from(requestDto);
         return memberRepository.save(member);
     }
 
-//    public Member updateMember(MemberRequestDto requestDto) {
-//        Member member = Member.from(requestDto);
-//        return memberRepository.save(member);
-//    }
+    public Member updateMember(Long memberId, MemberRequestDto requestDto) {
+        Member member = memberRepository.findById(memberId).orElse(null);
 
-//    public void deleteMember(Long memberId) {
-//        memberRepository.deleteById(memberId);
-//    }
+        if (member == null) {
+            return null;
+        }
+
+        member.update(requestDto); // transaction 끝나면 더티체킹 후 자동으로 update 쿼리 실행(DynamicUpdate 사용으로 인해 set 되지 않은 필드는 update 쿼리에서 제외됨)
+
+        return member;
+    }
+
+    public void deleteMember(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
 
 }

@@ -5,4 +5,6 @@ import world.meta.sns.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
+    Long countMemberByMemberName(String memberName);
+
 }
