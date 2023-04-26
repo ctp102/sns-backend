@@ -12,7 +12,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     @Modifying(clearAutomatically = true)
     @Query("delete from Member m where m.id = :memberId")
-    void deleteAllById(
+    void deleteById(
             @Param("memberId") Long memberId
     );
 

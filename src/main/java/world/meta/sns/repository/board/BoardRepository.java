@@ -19,13 +19,13 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
 
     @Modifying(clearAutomatically = true)
     @Query("delete from Board b where b.member.id = :memberId")
-    void deleteAllByMemberId(
+    void deleteByMemberId(
             @Param("memberId") Long memberId
     );
 
     @Modifying(clearAutomatically = true)
     @Query("delete from Board b where b.id = :boardId")
-    void deleteAllByBoardId(
+    void deleteByBoardId(
             @Param("boardId") Long boardId
     );
 

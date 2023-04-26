@@ -14,7 +14,6 @@ import world.meta.sns.form.board.BoardForm;
 import world.meta.sns.repository.board.BoardRepository;
 import world.meta.sns.repository.comment.CommentRepository;
 import world.meta.sns.repository.member.MemberRepository;
-import world.meta.sns.service.member.MemberService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -128,7 +127,7 @@ public class BoardService {
         commentRepository.deleteChildCommentsByParentCommentIds(parentCommentIds); // 자식 댓글부터 삭제해야 참조 무결성이 깨지지 않는다.
         commentRepository.deleteParentCommentsByBoardId(boardId); // 부모 댓글 삭제
 
-        boardRepository.deleteAllByBoardId(boardId);
+        boardRepository.deleteByBoardId(boardId);
 //        Board foundBoard = boardRepository.findById(boardId).orElseThrow();
 //
 //        if (!foundBoard.getId().equals(boardId)) {

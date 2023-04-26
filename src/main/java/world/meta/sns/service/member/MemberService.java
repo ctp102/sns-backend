@@ -78,10 +78,10 @@ public class MemberService {
         commentRepository.deleteParentCommentsByMemberId(memberId); // 부모 댓글 삭제
 
         // 2. 회원이 작성한 모든 게시글 삭제
-        boardRepository.deleteAllByMemberId(memberId);
+        boardRepository.deleteByMemberId(memberId);
 
         // 3. 회원 삭제
-        memberRepository.deleteAllById(memberId);
+        memberRepository.deleteById(memberId);
     }
 
 
