@@ -37,7 +37,7 @@ public class SnsApplication {
 
         for (int i = 1; i <= 10; i++) {
             // 회원 생성
-            Member member = new Member("member" + i);
+            Member member = new Member("member" + i + "@gmail.com", "member" + i);
             memberRepository.save(member);
 
             for (int j = 1; j <= 5; j++) {
@@ -47,7 +47,7 @@ public class SnsApplication {
             }
         }
 
-        // 댓글 생성
+        // 1번 회원 댓글 생성
         Comment parentComment = new Comment();
 
         memberRepository.findById(1L).ifPresent(parentComment::setMember);
@@ -58,15 +58,19 @@ public class SnsApplication {
         commentRepository.save(parentComment);
 
         for (int i = 1; i <= 3; i++) {
-            Comment childComment = new Comment();
 
-            memberRepository.findById(1L).ifPresent(childComment::setMember);
-            boardRepository.findById(1L).ifPresent(childComment::setBoard);
+            for (int j = 1; j <= 2; j++) {
+                Comment childComment = new Comment();
 
-            childComment.setParentComment(parentComment);
-            childComment.setContent("자식 댓글 " + i);
+                memberRepository.findById((long) j).ifPresent(childComment::setMember);
+                boardRepository.findById(1L).ifPresent(childComment::setBoard);
 
-            commentRepository.save(childComment);
+                childComment.setParentComment(parentComment);
+                childComment.setContent("자식 댓글 " + i);
+
+                commentRepository.save(childComment);
+            }
+
         }
 
 //        entityManager.flush();
