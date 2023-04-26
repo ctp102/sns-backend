@@ -2,7 +2,6 @@ package world.meta.sns.entity;
 
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.DynamicUpdate;
 import world.meta.sns.dto.member.MemberRequestDto;
 
 import javax.persistence.*;
@@ -13,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@DynamicUpdate
 public class Member extends BaseTimeEntity {
 
     @Id
@@ -21,13 +19,22 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String memberEmail;
+
+    @Column(nullable = false)
     private String memberName;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @BatchSize(size = 500)
     private List<Board> boards;
 
     public Member(String memberName) {
+        this.memberName = memberName;
+    }
+
+    public Member(String memberEmail, String memberName) {
+        this.memberEmail = memberEmail;
         this.memberName = memberName;
     }
 

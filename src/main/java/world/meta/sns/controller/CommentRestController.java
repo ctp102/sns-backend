@@ -29,6 +29,7 @@ public class CommentRestController {
 
     @DeleteMapping("/api/v1/comments/{commentId}")
     public void deleteComment(@PathVariable("commentId") Long commentId) {
+        // TODO: [2023-04-27] 수정 필요 
         commentService.deleteComment(commentId);
     }
 

@@ -29,28 +29,36 @@ public class BoardRestController {
     @GetMapping("/api/v1/boards")
     public CustomResponse findBoardList(BoardForm boardForm, Pageable pageable) {
         Page<BoardDto> items = boardService.findBoardList(boardForm, pageable);
+
         return new CustomResponse.Builder().addItems(items).build();
     }
 
     @GetMapping("/api/v1/boards/{boardId}")
-    public BoardDto findBoard(@PathVariable("boardId") Long boardId) {
-        return boardService.findBoard(boardId);
+    public CustomResponse findBoard(@PathVariable("boardId") Long boardId) {
+        BoardDto item = boardService.findBoard(boardId);
+
+        return new CustomResponse.Builder().addItems(item).build();
     }
 
     @PostMapping("/api/v1/boards")
-    public void saveBoard(@RequestBody BoardRequestDto requestDto) {
-        // TODO: [2023-04-18] response로 변환하기
+    public CustomResponse saveBoard(@RequestBody BoardRequestDto requestDto) {
         boardService.saveBoard(requestDto);
+
+        return new CustomResponse.Builder().build();
     }
 
     @PutMapping("/api/v1/boards/{boardId}")
-    public void updateBoard(@PathVariable("boardId") Long boardId, @RequestBody Board board) {
+    public CustomResponse updateBoard(@PathVariable("boardId") Long boardId, @RequestBody Board board) {
         boardService.updateBoard(boardId, board);
+
+        return new CustomResponse.Builder().build();
     }
 
     @DeleteMapping("/api/v1/boards/{boardId}")
-    public void deleteBoard(@PathVariable("boardId") Long boardId) {
+    public CustomResponse deleteBoard(@PathVariable("boardId") Long boardId) {
         boardService.deleteBoard(boardId);
+
+        return new CustomResponse.Builder().build();
     }
 
 }

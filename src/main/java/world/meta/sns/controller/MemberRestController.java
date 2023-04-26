@@ -6,10 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import world.meta.sns.dto.member.MemberDto;
 import world.meta.sns.dto.member.MemberRequestDto;
-import world.meta.sns.entity.Member;
 import world.meta.sns.form.member.MemberSearchForm;
 import world.meta.sns.mvc.view.CustomResponse;
-import world.meta.sns.mvc.view.CustomResponseCodes;
 import world.meta.sns.service.member.MemberService;
 
 @RestController
@@ -26,7 +24,7 @@ public class MemberRestController {
     }
 
     @GetMapping("/api/v1/members/{memberId}")
-    public CustomResponse findBoard(@PathVariable("memberId") Long memberId) {
+    public CustomResponse findMember(@PathVariable("memberId") Long memberId) {
 
         MemberDto item = memberService.findMember(memberId);
 
@@ -36,19 +34,17 @@ public class MemberRestController {
     @PostMapping("/api/v1/members")
     public CustomResponse saveMember(@RequestBody MemberRequestDto requestDto) {
 
-        Member item = memberService.saveMember(requestDto);
+        memberService.saveMember(requestDto);
 
-        return new CustomResponse.Builder().addItems(item).build();
+        return new CustomResponse.Builder().build();
     }
 
     @PutMapping("/api/v1/members/{memberId}")
     public CustomResponse updateMember(@PathVariable("memberId") Long memberId, @RequestBody MemberRequestDto requestDto) {
 
-        Member item = memberService.updateMember(memberId, requestDto);
-        
-        // TODO: [2023-04-25] item 결과에 따라 response 응답 코드를 다르게 줘야함 
+        memberService.updateMember(memberId, requestDto);
 
-        return new CustomResponse.Builder().addItems(item).build();
+        return new CustomResponse.Builder().build();
     }
 
     @DeleteMapping("/api/v1/members/{memberId}")

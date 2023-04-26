@@ -11,6 +11,8 @@ import world.meta.sns.dto.member.MemberDto;
 import world.meta.sns.dto.member.MemberRequestDto;
 import world.meta.sns.entity.Member;
 import world.meta.sns.form.member.MemberSearchForm;
+import world.meta.sns.repository.board.BoardRepository;
+import world.meta.sns.repository.comment.CommentRepository;
 import world.meta.sns.repository.member.MemberRepository;
 
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.List;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     public Page<MemberDto> findMemberList(MemberSearchForm memberSearchForm, Pageable pageable) {
@@ -45,7 +49,7 @@ public class MemberService {
         return MemberDto.from(member);
     }
 
-    public Member saveMember(MemberRequestDto requestDto) {
+    public void saveMember(MemberRequestDto requestDto) {
 
         Long count = memberRepository.countMemberByMemberName(requestDto.getMemberName());
         if (count > 0) {
@@ -53,23 +57,31 @@ public class MemberService {
         }
 
         Member member = Member.from(requestDto);
-        return memberRepository.save(member);
+        memberRepository.save(member);
     }
 
-    public Member updateMember(Long memberId, MemberRequestDto requestDto) {
+    public void updateMember(Long memberId, MemberRequestDto requestDto) {
         Member member = memberRepository.findById(memberId).orElse(null);
 
         if (member == null) {
-            return null;
+            return;
         }
 
-        member.update(requestDto); // transaction 끝나면 더티체킹 후 자동으로 update 쿼리 실행(DynamicUpdate 사용으로 인해 set 되지 않은 필드는 update 쿼리에서 제외됨)
-
-        return member;
+        member.update(requestDto); // transaction 끝나면 더티체킹 후 자동으로 update 쿼리 실행
     }
 
     public void deleteMember(Long memberId) {
-        memberRepository.deleteById(memberId);
+
+        // 1. 회원이 작성한 모든 부모/자식 댓글 삭제
+        List<Long> parentCommentIds = commentRepository.findParentCommentIdsByMemberId(memberId);
+        commentRepository.deleteChildCommentsByParentCommentIds(parentCommentIds); // 자식 댓글부터 삭제해야 참조 무결성이 깨지지 않는다.
+        commentRepository.deleteParentCommentsByMemberId(memberId); // 부모 댓글 삭제
+
+        // 2. 회원이 작성한 모든 게시글 삭제
+        boardRepository.deleteAllByMemberId(memberId);
+
+        // 3. 회원 삭제
+        memberRepository.deleteAllById(memberId);
     }
 
 

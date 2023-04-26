@@ -1,6 +1,7 @@
 package world.meta.sns.repository.board;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import world.meta.sns.entity.Board;
@@ -14,6 +15,18 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
             "where b.id = :id")
     Board findFetchJoinById(
             @Param("id") Long id
+    );
+
+    @Modifying(clearAutomatically = true)
+    @Query("delete from Board b where b.member.id = :memberId")
+    void deleteAllByMemberId(
+            @Param("memberId") Long memberId
+    );
+
+    @Modifying(clearAutomatically = true)
+    @Query("delete from Board b where b.id = :boardId")
+    void deleteAllByBoardId(
+            @Param("boardId") Long boardId
     );
 
 }
