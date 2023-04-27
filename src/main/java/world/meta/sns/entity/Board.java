@@ -4,6 +4,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import world.meta.sns.dto.board.BoardRequestDto;
+import world.meta.sns.dto.board.BoardUpdateDto;
 import world.meta.sns.enums.Category;
 
 import javax.persistence.*;
@@ -52,20 +53,19 @@ public class Board extends BaseTimeEntity {
         comment.setBoard(this);
     }
 
-    // BoardRequestDto를 만들어서 넣던데 왜 이렇게 하지?
-    // 여기서 null 체크를 하는게 맞을까?
-    public void update(Board board) {
+    // TODO: [2023-04-28] 추후 컨트롤러 단에서 validation 처리하기 
+    public void update(BoardUpdateDto boardUpdateDto) {
 
-        if (StringUtils.isNotBlank(board.getTitle())) {
-            this.title = board.getTitle();
+        if (StringUtils.isNotBlank(boardUpdateDto.getTitle())) {
+            this.title = boardUpdateDto.getTitle();
         }
 
-        if (StringUtils.isNotBlank(board.getContent())) {
-            this.content = board.getContent();
+        if (StringUtils.isNotBlank(boardUpdateDto.getContent())) {
+            this.content = boardUpdateDto.getContent();
         }
 
-        if (board.getCategory() != null) {
-            this.category = board.getCategory();
+        if (boardUpdateDto.getCategory() != null) {
+            this.category = boardUpdateDto.getCategory();
         }
     }
 

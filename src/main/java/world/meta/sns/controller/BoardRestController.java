@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import world.meta.sns.dto.board.BoardRequestDto;
+import world.meta.sns.dto.board.BoardUpdateDto;
 import world.meta.sns.entity.Board;
 import world.meta.sns.dto.board.BoardDto;
 import world.meta.sns.form.board.BoardForm;
@@ -20,12 +21,7 @@ public class BoardRestController {
 
     private final BoardService boardService;
 
-    // TODO: [2023-04-15] ResponseEntity 또는 커스텀 Response 생성해서 처리하기
-//    @GetMapping("/api/v1/boards")
-//    public Page<BoardDto> findBoardList(BoardForm boardForm, Pageable pageable) {
-//        return boardService.findBoardList(boardForm, pageable);
-//    }
-
+    // TODO: [2023-04-28] N+1 문제 해결하기 
     @GetMapping("/api/v1/boards")
     public CustomResponse findBoardList(BoardForm boardForm, Pageable pageable) {
         Page<BoardDto> items = boardService.findBoardList(boardForm, pageable);
@@ -48,8 +44,8 @@ public class BoardRestController {
     }
 
     @PutMapping("/api/v1/boards/{boardId}")
-    public CustomResponse updateBoard(@PathVariable("boardId") Long boardId, @RequestBody Board board) {
-        boardService.updateBoard(boardId, board);
+    public CustomResponse updateBoard(@PathVariable("boardId") Long boardId, @RequestBody BoardUpdateDto boardUpdateDto) {
+        boardService.updateBoard(boardId, boardUpdateDto);
 
         return new CustomResponse.Builder().build();
     }

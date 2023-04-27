@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import world.meta.sns.dto.member.MemberDto;
 import world.meta.sns.dto.member.MemberRequestDto;
+import world.meta.sns.dto.member.MemberUpdateDto;
 import world.meta.sns.form.member.MemberSearchForm;
 import world.meta.sns.mvc.view.CustomResponse;
 import world.meta.sns.service.member.MemberService;
@@ -32,17 +33,17 @@ public class MemberRestController {
     }
 
     @PostMapping("/api/v1/members")
-    public CustomResponse saveMember(@RequestBody MemberRequestDto requestDto) {
+    public CustomResponse saveMember(@RequestBody MemberRequestDto memberRequestDto) {
 
-        memberService.saveMember(requestDto);
+        memberService.saveMember(memberRequestDto);
 
         return new CustomResponse.Builder().build();
     }
 
     @PutMapping("/api/v1/members/{memberId}")
-    public CustomResponse updateMember(@PathVariable("memberId") Long memberId, @RequestBody MemberRequestDto requestDto) {
+    public CustomResponse updateMember(@PathVariable("memberId") Long memberId, @RequestBody MemberUpdateDto memberUpdateDto) {
 
-        memberService.updateMember(memberId, requestDto);
+        memberService.updateMember(memberId, memberUpdateDto);
 
         return new CustomResponse.Builder().build();
     }

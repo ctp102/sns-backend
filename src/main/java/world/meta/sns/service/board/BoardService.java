@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.dto.board.BoardDto;
 import world.meta.sns.dto.board.BoardRequestDto;
+import world.meta.sns.dto.board.BoardUpdateDto;
 import world.meta.sns.entity.Board;
 import world.meta.sns.entity.Member;
 import world.meta.sns.form.board.BoardForm;
@@ -15,8 +16,6 @@ import world.meta.sns.repository.board.BoardRepository;
 import world.meta.sns.repository.comment.CommentRepository;
 import world.meta.sns.repository.member.MemberRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Service
@@ -28,9 +27,6 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-
-    @PersistenceContext
-    private EntityManager em;
 
     /**
      * 게시글 목록 조회
@@ -92,6 +88,12 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
+    /**
+     * Save board board.
+     *
+     * @param requestDto the request dto
+     * @return the board
+     */
     public Board saveBoard(BoardRequestDto requestDto) {
 
         Member foundMember = memberRepository.findById(requestDto.getMemberId())
@@ -106,13 +108,19 @@ public class BoardService {
     /**
      * 게시글 수정
      *
-     * @param boardId the board id
-     * @param board   the board
+     * @param boardId        the board id
+     * @param boardUpdateDto the board update dto
      */
-    public void updateBoard(Long boardId, Board board) {
+    public void updateBoard(Long boardId, BoardUpdateDto boardUpdateDto) {
 
-        Board foundBoard = boardRepository.findById(boardId).orElseThrow();
-        foundBoard.update(board);
+        Board board = boardRepository.findById(boardId).orElse(null);
+
+        if (board == null) {
+            // 응답값 변경하기(404: 찾을 수 없음이라는 둥...)
+            return;
+        }
+
+        board.update(boardUpdateDto);
     }
 
     /**
@@ -125,16 +133,9 @@ public class BoardService {
 
         List<Long> parentCommentIds = commentRepository.findParentCommentIdsByBoardId(boardId);
         commentRepository.deleteChildCommentsByParentCommentIds(parentCommentIds); // 자식 댓글부터 삭제해야 참조 무결성이 깨지지 않는다.
-        commentRepository.deleteParentCommentsByBoardId(boardId); // 부모 댓글 삭제
+        commentRepository.deleteCommentsByBoardId(boardId); // 부모 댓글 삭제
 
         boardRepository.deleteByBoardId(boardId);
-//        Board foundBoard = boardRepository.findById(boardId).orElseThrow();
-//
-//        if (!foundBoard.getId().equals(boardId)) {
-//            throw new IllegalStateException("해당 게시글이 존재하지 않습니다.");
-//        }
-//
-//        boardRepository.delete(foundBoard);
     }
 
 }

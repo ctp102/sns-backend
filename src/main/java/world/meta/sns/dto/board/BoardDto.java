@@ -19,9 +19,9 @@ import java.util.Map;
 public class BoardDto {
 
     private Long boardId;
+    private String writer;
     private String title;
     private String content;
-    private String writer;
     private List<CommentDto> commentDtos;
 
     private LocalDateTime createdDate;
@@ -61,6 +61,7 @@ public class BoardDto {
 
         board.getComments().forEach(comment -> {
             CommentDto commentDto = CommentDto.from(comment);
+
             if (comment.getParentComment() != null) {
                 commentDto.setParentCommentId(comment.getParentComment().getId());
             }

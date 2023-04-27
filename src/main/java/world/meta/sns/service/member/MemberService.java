@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.dto.member.MemberDto;
 import world.meta.sns.dto.member.MemberRequestDto;
+import world.meta.sns.dto.member.MemberUpdateDto;
 import world.meta.sns.entity.Member;
 import world.meta.sns.form.member.MemberSearchForm;
 import world.meta.sns.repository.board.BoardRepository;
@@ -27,6 +28,13 @@ public class MemberService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
+    /**
+     * 회원 목록 조회
+     *
+     * @param memberSearchForm the member search form
+     * @param pageable         the pageable
+     * @return the page
+     */
     @Transactional(readOnly = true)
     public Page<MemberDto> findMemberList(MemberSearchForm memberSearchForm, Pageable pageable) {
 
@@ -38,8 +46,15 @@ public class MemberService {
         return new PageImpl<>(memberDtos, pageable, results.getTotalElements());
     }
 
+    /**
+     * 회원 단건 조회
+     *
+     * @param memberId the member id
+     * @return the member dto
+     */
     @Transactional(readOnly = true)
     public MemberDto findMember(Long memberId) {
+
         Member member = memberRepository.findById(memberId).orElse(null);
 
         if (member == null) {
@@ -49,33 +64,51 @@ public class MemberService {
         return MemberDto.from(member);
     }
 
-    public void saveMember(MemberRequestDto requestDto) {
+    /**
+     * 회원 등록
+     *
+     * @param memberRequestDto the member request dto
+     */
+    public void saveMember(MemberRequestDto memberRequestDto) {
 
-        Long count = memberRepository.countMemberByMemberName(requestDto.getMemberName());
+        Long count = memberRepository.countMemberByMemberEmail(memberRequestDto.getMemberEmail());
         if (count > 0) {
             throw new IllegalStateException("이미 존재하는 회원입니다."); // TODO: [2023-04-25] Exception 공통 처리하기. 현재는 500 에러뜬다
         }
 
-        Member member = Member.from(requestDto);
+        Member member = Member.from(memberRequestDto);
         memberRepository.save(member);
     }
 
-    public void updateMember(Long memberId, MemberRequestDto requestDto) {
+    /**
+     * 회원 수정
+     *
+     * @param memberId        the member id
+     * @param memberUpdateDto the member update dto
+     */
+    public void updateMember(Long memberId, MemberUpdateDto memberUpdateDto) {
+
         Member member = memberRepository.findById(memberId).orElse(null);
 
         if (member == null) {
             return;
         }
 
-        member.update(requestDto); // transaction 끝나면 더티체킹 후 자동으로 update 쿼리 실행
+        member.update(memberUpdateDto); // transaction 끝나면 더티체킹 후 자동으로 update 쿼리 실행
     }
 
+    /**
+     * 회원 삭제
+     * 연관된 게시글, 부모/자식 댓글까지 삭제
+     *
+     * @param memberId the member id
+     */
     public void deleteMember(Long memberId) {
 
         // 1. 회원이 작성한 모든 부모/자식 댓글 삭제
         List<Long> parentCommentIds = commentRepository.findParentCommentIdsByMemberId(memberId);
         commentRepository.deleteChildCommentsByParentCommentIds(parentCommentIds); // 자식 댓글부터 삭제해야 참조 무결성이 깨지지 않는다.
-        commentRepository.deleteParentCommentsByMemberId(memberId); // 부모 댓글 삭제
+        commentRepository.deleteCommentsByMemberId(memberId); // 부모 댓글 삭제
 
         // 2. 회원이 작성한 모든 게시글 삭제
         boardRepository.deleteByMemberId(memberId);
