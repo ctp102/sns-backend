@@ -2,6 +2,7 @@ package world.meta.sns.entity;
 
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import world.meta.sns.dto.comment.CommentUpdateDto;
 
 import javax.persistence.*;
 import java.util.List;
@@ -49,6 +50,10 @@ public class Comment extends BaseTimeEntity {
         if (StringUtils.isNotBlank(comment.getContent())) {
             this.content = comment.getContent();
         }
+    }
+
+    public void update(CommentUpdateDto commentUpdateDto) {
+        this.content = commentUpdateDto.getContent();
     }
 
 }

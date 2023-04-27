@@ -26,7 +26,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
      */
     @Query(
             "select c.parentComment.id from Comment c " +
-                    "where c.board.id = :boardId and (c.parentComment.id is not null and c.parentComment.id = :boardId)"
+            "where c.board.id = :boardId and (c.parentComment.id is not null and c.parentComment.id = :boardId)"
     )
     List<Long> findParentCommentIdsByBoardId(
             @Param("boardId") Long boardId
@@ -42,21 +42,39 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
     );
 
     /**
-     * member id로 작성한 부모 댓글 삭제
+     * member id로 작성한 댓글 삭제
      */
     @Modifying(clearAutomatically = true)
-    @Query("delete from Comment c where c.member.id = :memberId and c.parentComment.id is null")
-    void deleteParentCommentsByMemberId(
+    @Query("delete from Comment c where c.member.id = :memberId")
+    void deleteCommentsByMemberId(
             @Param("memberId") Long memberId
     );
 
     /**
-     * board id로 작성한 부모 댓글 삭제
+     * board id로 작성한 댓글 삭제
      */
     @Modifying(clearAutomatically = true)
-    @Query("delete from Comment c where c.board.id = :boardId and c.parentComment.id is null")
-    void deleteParentCommentsByBoardId(
+    @Query("delete from Comment c where c.board.id = :boardId")
+    void deleteCommentsByBoardId(
             @Param("boardId") Long boardId
+    );
+
+    /**
+     * comment id로 자식 댓글 삭제
+     */
+    @Modifying(clearAutomatically = true)
+    @Query("delete from Comment c where c.parentComment.id = :commentId")
+    void deleteChildCommentsByCommentId(
+            @Param("commentId") Long commentId
+    );
+
+    /**
+     * comment id로 작성한 댓글 삭제
+     */
+    @Modifying(clearAutomatically = true)
+    @Query("delete from Comment c where c.id = :commentId")
+    void deleteCommentsByCommentId(
+            @Param("commentId") Long commentId
     );
 
 }

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.dto.comment.CommentRequestDto;
+import world.meta.sns.dto.comment.CommentUpdateDto;
 import world.meta.sns.entity.Board;
 import world.meta.sns.entity.Comment;
 import world.meta.sns.entity.Member;
@@ -22,6 +23,11 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
+    /**
+     * 댓글 등록
+     *
+     * @param requestDto the request dto
+     */
     public void saveComment(CommentRequestDto requestDto) {
         // 1. board 존재 유무 체크
         Board foundBoard = boardRepository.findById(requestDto.getBoardId())
@@ -61,8 +67,30 @@ public class CommentService {
         log.info("comment: {}", comment);
     }
 
-    public void deleteComment(Long commentId) {
-        commentRepository.deleteById(commentId);
+    /**
+     * 댓글 수정
+     *
+     * @param commentId        the comment id
+     * @param commentUpdateDto the comment update dto
+     */
+    public void updateComment(Long commentId, CommentUpdateDto commentUpdateDto) {
+
+        Comment comment = commentRepository.findById(commentId).orElse(null);
+
+        if (comment == null) {
+            return;
+        }
+
+        comment.update(commentUpdateDto);
     }
 
+    /**
+     * 댓글 삭제
+     *
+     * @param commentId the comment id
+     */
+    public void deleteComment(Long commentId) {
+        commentRepository.deleteChildCommentsByCommentId(commentId);  // 자식 댓글 삭제
+        commentRepository.deleteCommentsByCommentId(commentId); // 부모 댓글 삭제
+    }
 }
