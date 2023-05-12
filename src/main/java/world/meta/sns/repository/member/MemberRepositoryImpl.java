@@ -24,6 +24,10 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         List<Member> members = queryFactory
                 .selectFrom(member)
                 .where(equalsMemberName(memberSearchForm.getMemberName()))
+//                .where(
+//                        likeMemberEmail(memberSearchForm.getMemberEmail()),
+//                        likeMemberName(memberSearchForm.getMemberName())
+//                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -41,6 +45,14 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     public BooleanExpression equalsMemberName(String memberName) {
         return StringUtils.isNotBlank(memberName) ? member.memberName.eq(memberName) : null;
+    }
+
+    public BooleanExpression likeMemberName(String memberName) {
+        return StringUtils.isNotBlank(memberName) ? member.memberName.like(memberName + "%") : null;
+    }
+
+    public BooleanExpression likeMemberEmail(String memberEmail) {
+        return StringUtils.isNotBlank(memberEmail) ? member.memberEmail.like(memberEmail + "%") : null;
     }
 
 }

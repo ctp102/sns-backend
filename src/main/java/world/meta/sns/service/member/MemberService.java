@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.dto.member.MemberDto;
-import world.meta.sns.dto.member.MemberRequestDto;
+import world.meta.sns.dto.member.MemberSaveDto;
 import world.meta.sns.dto.member.MemberUpdateDto;
 import world.meta.sns.entity.Member;
 import world.meta.sns.form.member.MemberSearchForm;
@@ -67,16 +67,16 @@ public class MemberService {
     /**
      * 회원 등록
      *
-     * @param memberRequestDto the member request dto
+     * @param memberSaveDto the member request dto
      */
-    public void saveMember(MemberRequestDto memberRequestDto) {
+    public void saveMember(MemberSaveDto memberSaveDto) {
 
-        Long count = memberRepository.countMemberByMemberEmail(memberRequestDto.getMemberEmail());
+        Long count = memberRepository.countMemberByMemberEmail(memberSaveDto.getMemberEmail());
         if (count > 0) {
             throw new IllegalStateException("이미 존재하는 회원입니다."); // TODO: [2023-04-25] Exception 공통 처리하기. 현재는 500 에러뜬다
         }
 
-        Member member = Member.from(memberRequestDto);
+        Member member = Member.from(memberSaveDto);
         memberRepository.save(member);
     }
 

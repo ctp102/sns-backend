@@ -2,7 +2,7 @@ package world.meta.sns.entity;
 
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
-import world.meta.sns.dto.member.MemberRequestDto;
+import world.meta.sns.dto.member.MemberSaveDto;
 import world.meta.sns.dto.member.MemberUpdateDto;
 
 import javax.persistence.*;
@@ -48,10 +48,10 @@ public class Member extends BaseTimeEntity {
         this.memberName = memberUpdateDto.getMemberName();
     }
 
-    public static Member from(MemberRequestDto memberRequestDto) {
+    public static Member from(MemberSaveDto memberSaveDto) {
         return Member.builder()
-                .memberEmail(memberRequestDto.getMemberEmail())
-                .memberName(memberRequestDto.getMemberName())
+                .memberEmail(memberSaveDto.getMemberEmail())
+                .memberName(memberSaveDto.getMemberName())
                 .build();
     }
 

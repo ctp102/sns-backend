@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import world.meta.sns.dto.member.MemberDto;
-import world.meta.sns.dto.member.MemberRequestDto;
+import world.meta.sns.dto.member.MemberSaveDto;
 import world.meta.sns.dto.member.MemberUpdateDto;
 import world.meta.sns.form.member.MemberSearchForm;
 import world.meta.sns.mvc.view.CustomResponse;
@@ -33,9 +33,9 @@ public class MemberRestController {
     }
 
     @PostMapping("/api/v1/members")
-    public CustomResponse saveMember(@RequestBody MemberRequestDto memberRequestDto) {
+    public CustomResponse saveMember(@RequestBody MemberSaveDto memberSaveDto) {
 
-        memberService.saveMember(memberRequestDto);
+        memberService.saveMember(memberSaveDto);
 
         return new CustomResponse.Builder().build();
     }

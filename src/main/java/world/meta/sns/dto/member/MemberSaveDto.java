@@ -1,11 +1,15 @@
 package world.meta.sns.dto.member;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class MemberRequestDto {
+@AllArgsConstructor
+@NoArgsConstructor
+public class MemberSaveDto {
 
     private String memberEmail;
     private String memberName;
