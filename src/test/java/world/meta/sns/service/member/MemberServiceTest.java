@@ -1,21 +1,98 @@
 package world.meta.sns.service.member;
 
-import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import world.meta.sns.dto.member.MemberBoardDto;
+import world.meta.sns.dto.member.MemberDto;
+import world.meta.sns.entity.Board;
+import world.meta.sns.entity.Member;
+import world.meta.sns.repository.board.BoardRepository;
+import world.meta.sns.repository.comment.CommentRepository;
+import world.meta.sns.repository.member.MemberRepository;
 
-@SpringBootTest
-@Transactional
-@Slf4j
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
 
-    @Autowired private MemberService memberService;
+    @InjectMocks
+    private MemberService memberService;
+
+    @Mock
+    private MemberRepository memberRepository;
+
+    @Mock
+    private BoardRepository boardRepository;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @Test
-    public void aa() throws Exception {
-        memberService.findMember(1L);
+    @DisplayName("회원 단건 조회")
+    void findMember() throws Exception {
+
+        // given
+        Long memberId = 1L;
+        Member member = new Member();
+        member.setId(memberId);
+        member.setMemberEmail("test@example.com");
+        member.setMemberName("John Doe");
+        Board board = new Board();
+        board.setId(1L);
+        board.setTitle("Board 1");
+        board.setContent("Content 1");
+        board.setMember(member);
+        member.getBoards().add(board);
+
+        // stub
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+        // when
+        MemberDto result = memberService.findMember(memberId);
+
+        // then
+        assertThat(result.getMemberEmail()).isEqualTo(member.getMemberEmail());
+        assertThat(result.getMemberName()).isEqualTo(member.getMemberName());
+        assertThat(result.getMemberBoardDtos()).hasSize(1);
+        MemberBoardDto boardDto = result.getMemberBoardDtos().get(0);
+        assertThat(boardDto.getBoardId()).isEqualTo(board.getId());
+        assertThat(boardDto.getTitle()).isEqualTo(board.getTitle());
+        assertThat(boardDto.getContent()).isEqualTo(board.getContent());
+        assertThat(boardDto.getWriter()).isEqualTo(board.getMember().getMemberName());
+
+        // verify
+        verify(memberRepository, times(1)).findById(memberId);
+    }
+
+    @Test
+    @DisplayName("회원 등록")
+    public void saveMemberTest() {
+        // given
+        Long memberId = 1L;
+        Member member = new Member();
+        member.setId(memberId);
+        member.setMemberEmail("test@example.com");
+        member.setMemberName("John Doe");
+
+        // stub
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+        // when
+        MemberDto result = memberService.findMember(memberId);
+
+        // then
+        assertThat(result.getMemberEmail()).isEqualTo(member.getMemberEmail());
+        assertThat(result.getMemberName()).isEqualTo(member.getMemberName());
+
+        // verify
+        verify(memberRepository, times(1)).findById(memberId);
     }
 
 }

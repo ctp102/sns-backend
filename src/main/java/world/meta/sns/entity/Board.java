@@ -8,13 +8,14 @@ import world.meta.sns.dto.board.BoardUpdateDto;
 import world.meta.sns.enums.Category;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 @Builder
 public class Board extends BaseTimeEntity {
@@ -39,7 +40,7 @@ public class Board extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @BatchSize(size = 500)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     public Board(String title, String content, Category category, Member member) {
         this.title = title;

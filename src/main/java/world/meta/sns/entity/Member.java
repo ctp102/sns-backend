@@ -6,11 +6,12 @@ import world.meta.sns.dto.member.MemberSaveDto;
 import world.meta.sns.dto.member.MemberUpdateDto;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 @Builder
 public class Member extends BaseTimeEntity {
@@ -28,7 +29,7 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @BatchSize(size = 500)
-    private List<Board> boards;
+    private List<Board> boards = new ArrayList<>();
 
     public Member(String memberName) {
         this.memberName = memberName;
