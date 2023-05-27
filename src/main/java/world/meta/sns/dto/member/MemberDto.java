@@ -9,14 +9,14 @@ import java.util.List;
 @Data
 public class MemberDto {
 
-    private String memberEmail;
-    private String memberName;
+    private String email;
+    private String name;
     private List<MemberBoardDto> memberBoardDtos = new ArrayList<>(); // 회원이 작성한 게시글 목록만 조회하면 되므로 comments 제외
 
     public static MemberDto from(Member member) {
         MemberDto memberDto = new MemberDto();
-        memberDto.setMemberEmail(member.getMemberEmail());
-        memberDto.setMemberName(member.getMemberName());
+        memberDto.setEmail(member.getEmail());
+        memberDto.setName(member.getName());
 
         member.getBoards().forEach(board -> {
             MemberBoardDto memberBoardDto = MemberBoardDto.from(board);

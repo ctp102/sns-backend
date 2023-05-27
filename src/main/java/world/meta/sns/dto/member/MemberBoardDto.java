@@ -22,7 +22,7 @@ public class MemberBoardDto {
                 .boardId(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .writer(board.getMember().getMemberName())
+                .writer(board.getMember().getName())
                 .build();
     }
 

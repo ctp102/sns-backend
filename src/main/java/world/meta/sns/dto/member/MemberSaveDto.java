@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MemberSaveDto {
 
-    private String memberEmail;
-    private String memberName;
+    private String email;
+    private String name;
 
 }

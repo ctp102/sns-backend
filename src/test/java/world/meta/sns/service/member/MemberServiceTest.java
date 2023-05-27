@@ -42,8 +42,8 @@ public class MemberServiceTest {
         Long memberId = 1L;
         Member member = new Member();
         member.setId(memberId);
-        member.setMemberEmail("test@example.com");
-        member.setMemberName("John Doe");
+        member.setEmail("test@example.com");
+        member.setName("John Doe");
         Board board = new Board();
         board.setId(1L);
         board.setTitle("Board 1");
@@ -58,14 +58,14 @@ public class MemberServiceTest {
         MemberDto result = memberService.findMember(memberId);
 
         // then
-        assertThat(result.getMemberEmail()).isEqualTo(member.getMemberEmail());
-        assertThat(result.getMemberName()).isEqualTo(member.getMemberName());
+        assertThat(result.getEmail()).isEqualTo(member.getEmail());
+        assertThat(result.getName()).isEqualTo(member.getName());
         assertThat(result.getMemberBoardDtos()).hasSize(1);
         MemberBoardDto boardDto = result.getMemberBoardDtos().get(0);
         assertThat(boardDto.getBoardId()).isEqualTo(board.getId());
         assertThat(boardDto.getTitle()).isEqualTo(board.getTitle());
         assertThat(boardDto.getContent()).isEqualTo(board.getContent());
-        assertThat(boardDto.getWriter()).isEqualTo(board.getMember().getMemberName());
+        assertThat(boardDto.getWriter()).isEqualTo(board.getMember().getName());
 
         // verify
         verify(memberRepository, times(1)).findById(memberId);
@@ -78,8 +78,8 @@ public class MemberServiceTest {
         Long memberId = 1L;
         Member member = new Member();
         member.setId(memberId);
-        member.setMemberEmail("test@example.com");
-        member.setMemberName("John Doe");
+        member.setEmail("test@example.com");
+        member.setName("John Doe");
 
         // stub
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
@@ -88,8 +88,8 @@ public class MemberServiceTest {
         MemberDto result = memberService.findMember(memberId);
 
         // then
-        assertThat(result.getMemberEmail()).isEqualTo(member.getMemberEmail());
-        assertThat(result.getMemberName()).isEqualTo(member.getMemberName());
+        assertThat(result.getEmail()).isEqualTo(member.getEmail());
+        assertThat(result.getName()).isEqualTo(member.getName());
 
         // verify
         verify(memberRepository, times(1)).findById(memberId);

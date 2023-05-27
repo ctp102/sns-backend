@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class MemberSearchForm {
 
-    private String memberEmail;
-    private String memberName;
+    private String email;
+    private String name;
 
 }

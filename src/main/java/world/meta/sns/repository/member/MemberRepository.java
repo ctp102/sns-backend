@@ -8,7 +8,9 @@ import world.meta.sns.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
-    Long countMemberByMemberEmail(String memberEmail);
+    Long countMemberByEmail(String email);
+
+    Member findMemberByEmail(String email);
 
     @Modifying(clearAutomatically = true)
     @Query("delete from Member m where m.id = :memberId")

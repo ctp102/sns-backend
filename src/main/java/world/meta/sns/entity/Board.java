@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import world.meta.sns.dto.board.BoardRequestDto;
 import world.meta.sns.dto.board.BoardUpdateDto;
-import world.meta.sns.enums.Category;
+import world.meta.sns.enums.board.Category;
 
 import javax.persistence.*;
 import java.util.ArrayList;

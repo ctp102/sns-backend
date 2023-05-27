@@ -23,10 +23,10 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         List<Member> members = queryFactory
                 .selectFrom(member)
-                .where(equalsMemberName(memberSearchForm.getMemberName()))
+                .where(equalsName(memberSearchForm.getName()))
 //                .where(
-//                        likeMemberEmail(memberSearchForm.getMemberEmail()),
-//                        likeMemberName(memberSearchForm.getMemberName())
+//                        likeEmail(memberSearchForm.getEmail()),
+//                        likeName(memberSearchForm.getName())
 //                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -35,7 +35,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         // TODO: [2023-04-15] Deprecated 된 메서드 사용하지 않기
         long totalCount = queryFactory
                 .selectFrom(member)
-                .where(equalsMemberName(memberSearchForm.getMemberName()))
+                .where(equalsName(memberSearchForm.getName()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchCount();
@@ -43,16 +43,16 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         return new PageImpl<>(members, pageable, totalCount);
     }
 
-    public BooleanExpression equalsMemberName(String memberName) {
-        return StringUtils.isNotBlank(memberName) ? member.memberName.eq(memberName) : null;
+    public BooleanExpression equalsName(String name) {
+        return StringUtils.isNotBlank(name) ? member.name.eq(name) : null;
     }
 
-    public BooleanExpression likeMemberName(String memberName) {
-        return StringUtils.isNotBlank(memberName) ? member.memberName.like(memberName + "%") : null;
+    public BooleanExpression likeName(String name) {
+        return StringUtils.isNotBlank(name) ? member.name.like(name + "%") : null;
     }
 
-    public BooleanExpression likeMemberEmail(String memberEmail) {
-        return StringUtils.isNotBlank(memberEmail) ? member.memberEmail.like(memberEmail + "%") : null;
+    public BooleanExpression likeEmail(String email) {
+        return StringUtils.isNotBlank(email) ? member.email.like(email + "%") : null;
     }
 
 }

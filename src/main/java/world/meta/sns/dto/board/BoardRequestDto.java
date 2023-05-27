@@ -2,7 +2,7 @@ package world.meta.sns.dto.board;
 
 import lombok.Getter;
 import lombok.Setter;
-import world.meta.sns.enums.Category;
+import world.meta.sns.enums.board.Category;
 
 @Setter
 @Getter

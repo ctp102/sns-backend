@@ -1,4 +1,4 @@
-package world.meta.sns.enums;
+package world.meta.sns.enums.board;
 
 public enum Category {
 

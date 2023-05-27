@@ -27,7 +27,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     public Page<BoardDto> findAll(BoardForm boardForm, Pageable pageable) {
 
         List<BoardDto> boardDtos = queryFactory
-                .select(new QBoardDto(board.id, board.title, board.content, member.memberName, board.createdDate, board.updatedDate))
+                .select(new QBoardDto(board.id, board.title, board.content, member.name, board.createdDate, board.updatedDate))
                 .from(board)
                 .leftJoin(board.member, member)
                 .where(
@@ -42,7 +42,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         // TODO: [2023-04-15] Deprecated 된 메서드 사용하지 않기
         long totalCount = queryFactory
                 .select(Projections.constructor(
-                        BoardDto.class, board.id, board.title, board.content, member.memberName, board.createdDate, board.updatedDate)
+                        BoardDto.class, board.id, board.title, board.content, member.name, board.createdDate, board.updatedDate)
                 )
                 .from(board)
                 .leftJoin(board.member, member)
@@ -69,7 +69,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         }
 
         if (StringUtils.isNotBlank(boardForm.getWriter())) {
-            builder.or(member.memberName.eq(boardForm.getWriter()));
+            builder.or(member.name.eq(boardForm.getWriter()));
         }
 
         if (boardForm.getStartDate() != null) {
@@ -84,7 +84,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     }
 
     public BooleanExpression equalsWriter(String writer) {
-        return StringUtils.isNotBlank(writer) ? member.memberName.eq(writer) : null;
+        return StringUtils.isNotBlank(writer) ? member.name.eq(writer) : null;
     }
 
     public BooleanExpression equalsTitle(String title) {

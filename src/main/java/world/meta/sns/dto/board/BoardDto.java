@@ -42,7 +42,7 @@ public class BoardDto {
                 .boardId(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .writer(board.getMember().getMemberName())
+                .writer(board.getMember().getName())
                 .commentDtos(new ArrayList<>())
                 .createdDate(board.getCreatedDate())
                 .updatedDate(board.getUpdatedDate())
