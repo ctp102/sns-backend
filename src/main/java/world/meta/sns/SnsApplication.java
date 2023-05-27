@@ -1,7 +1,6 @@
 package world.meta.sns;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -9,7 +8,7 @@ import org.springframework.context.event.EventListener;
 import world.meta.sns.entity.Board;
 import world.meta.sns.entity.Comment;
 import world.meta.sns.entity.Member;
-import world.meta.sns.enums.Category;
+import world.meta.sns.enums.board.Category;
 import world.meta.sns.repository.board.BoardRepository;
 import world.meta.sns.repository.comment.CommentRepository;
 import world.meta.sns.repository.member.MemberRepository;

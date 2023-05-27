@@ -71,7 +71,7 @@ public class MemberService {
      */
     public void saveMember(MemberSaveDto memberSaveDto) {
 
-        Long count = memberRepository.countMemberByMemberEmail(memberSaveDto.getMemberEmail());
+        Long count = memberRepository.countMemberByEmail(memberSaveDto.getEmail());
         if (count > 0) {
             throw new IllegalStateException("이미 존재하는 회원입니다."); // TODO: [2023-04-25] Exception 공통 처리하기. 현재는 500 에러뜬다
         }

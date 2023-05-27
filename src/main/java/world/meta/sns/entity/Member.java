@@ -22,22 +22,31 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String memberEmail;
+    private String email;
 
-    @Column(nullable = false)
-    private String memberName;
+    @Column(nullable = true) // TODO: [2023-05-27] false로 바꾸기
+    private String password;
+
+    @Column(nullable = true)
+    private String name;
+
+    @Column(nullable = true) // TODO: [2023-05-27] false로 바꾸기
+    private String role; // ROLE_USER, ROLE_ADMIN
+
+    private String provider;   // google, facebook...
+    private String providerId; // oauth2 로그인하면 받는 id
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @BatchSize(size = 500)
     private List<Board> boards = new ArrayList<>();
 
-    public Member(String memberName) {
-        this.memberName = memberName;
+    public Member(String name) {
+        this.name = name;
     }
 
-    public Member(String memberEmail, String memberName) {
-        this.memberEmail = memberEmail;
-        this.memberName = memberName;
+    public Member(String email, String name) {
+        this.email = email;
+        this.name = name;
     }
 
     public void addBoard(Board board) {
@@ -46,13 +55,13 @@ public class Member extends BaseTimeEntity {
     }
 
     public void update(MemberUpdateDto memberUpdateDto) {
-        this.memberName = memberUpdateDto.getMemberName();
+        this.name = memberUpdateDto.getName();
     }
 
     public static Member from(MemberSaveDto memberSaveDto) {
         return Member.builder()
-                .memberEmail(memberSaveDto.getMemberEmail())
-                .memberName(memberSaveDto.getMemberName())
+                .email(memberSaveDto.getEmail())
+                .name(memberSaveDto.getName())
                 .build();
     }
 
