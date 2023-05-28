@@ -31,10 +31,8 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
 
     private final ObjectMapper objectMapper;
 
-    public JsonUsernamePasswordAuthenticationFilter(ObjectMapper objectMapper, CustomAuthenticationSuccessHandler successHandler, CustomAuthenticationFailureHandler failureHandler) {
+    public JsonUsernamePasswordAuthenticationFilter(ObjectMapper objectMapper) {
         super(DEFAULT_LOGIN_PATH_REQUEST_MATCHER);
-        super.setAuthenticationSuccessHandler(successHandler);
-        super.setAuthenticationFailureHandler(failureHandler);
         this.objectMapper = objectMapper;
     }
 
