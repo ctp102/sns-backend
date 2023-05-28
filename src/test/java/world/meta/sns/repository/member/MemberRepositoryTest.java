@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import world.meta.sns.aaaaaa.member.entity.Member;
-import world.meta.sns.aaaaaa.member.repository.MemberRepository;
+import world.meta.sns.core.member.entity.Member;
+import world.meta.sns.core.member.repository.MemberRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

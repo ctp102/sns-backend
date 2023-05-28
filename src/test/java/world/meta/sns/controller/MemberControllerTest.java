@@ -10,10 +10,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import world.meta.sns.aaaaaa.member.dto.MemberJoinDto;
-import world.meta.sns.aaaaaa.member.dto.MemberUpdateDto;
-import world.meta.sns.aaaaaa.member.form.MemberSearchForm;
-import world.meta.sns.aaaaaa.member.service.MemberService;
+import world.meta.sns.core.member.dto.MemberJoinDto;
+import world.meta.sns.core.member.dto.MemberUpdateDto;
+import world.meta.sns.core.member.form.MemberSearchForm;
+import world.meta.sns.core.member.service.MemberService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
