@@ -12,8 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -23,15 +21,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import world.meta.sns.aaaaaa.config.properties.JwtProperties;
-import world.meta.sns.security.filter.JsonUsernamePasswordAuthenticationFilter;
-import world.meta.sns.security.handler.CustomLogoutHandler;
-import world.meta.sns.security.handler.CustomLogoutSuccessHandler;
-import world.meta.sns.security.jwt.JwtUtils;
-import world.meta.sns.security.handler.CustomAuthenticationFailureHandler;
-import world.meta.sns.security.handler.CustomAuthenticationSuccessHandler;
-import world.meta.sns.security.service.CustomOAuth2UserService;
-import world.meta.sns.security.service.CustomUserDetailsService;
-import world.meta.sns.security.service.RedisCacheService;
+import world.meta.sns.aaaaaa.security.filter.JsonUsernamePasswordAuthenticationFilter;
+import world.meta.sns.aaaaaa.security.handler.CustomLogoutHandler;
+import world.meta.sns.aaaaaa.security.handler.CustomLogoutSuccessHandler;
+import world.meta.sns.aaaaaa.security.jwt.JwtUtils;
+import world.meta.sns.aaaaaa.security.handler.CustomAuthenticationFailureHandler;
+import world.meta.sns.aaaaaa.security.handler.CustomAuthenticationSuccessHandler;
+import world.meta.sns.aaaaaa.security.service.RedisCacheService;
 
 @Configuration
 @EnableWebSecurity

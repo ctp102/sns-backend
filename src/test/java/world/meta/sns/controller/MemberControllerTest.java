@@ -1,27 +1,32 @@
 package world.meta.sns.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import world.meta.sns.dto.member.MemberSaveDto;
-import world.meta.sns.dto.member.MemberUpdateDto;
-import world.meta.sns.form.member.MemberSearchForm;
+import world.meta.sns.aaaaaa.member.dto.MemberJoinDto;
+import world.meta.sns.aaaaaa.member.dto.MemberUpdateDto;
+import world.meta.sns.aaaaaa.member.form.MemberSearchForm;
+import world.meta.sns.aaaaaa.member.service.MemberService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@Slf4j
-@WebMvcTest(MemberRestController.class)
+@AutoConfigureMockMvc
+@SpringBootTest
 public class MemberControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private MemberService memberService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -49,13 +54,14 @@ public class MemberControllerTest {
     @Test
     @DisplayName("회원 등록")
     void saveMember() throws Exception {
-        String memeberEmail = "test999@naver.com";
-        String memeberName = "테스트999";
-        MemberSaveDto memberSaveDto = new MemberSaveDto(memeberEmail, memeberName);
+        String email = "test999@naver.com";
+        String password = "test";
+        String role = "ROLE_USER";
+        MemberJoinDto memberJoinDto = new MemberJoinDto(email, password, role);
 
         mockMvc.perform(post("/api/v1/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(memberSaveDto)))
+                .content(objectMapper.writeValueAsString(memberJoinDto)))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -64,7 +70,7 @@ public class MemberControllerTest {
     @DisplayName("회원 수정")
     void updateMember() throws Exception {
         MemberUpdateDto memberUpdateDto = new MemberUpdateDto();
-        memberUpdateDto.setMemberName("테스트999를 888로");
+        memberUpdateDto.setName("테스트999를 888로");
 
         mockMvc.perform(put("/api/v1/members/1")
                         .contentType(MediaType.APPLICATION_JSON)

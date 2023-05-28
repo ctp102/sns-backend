@@ -6,13 +6,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import world.meta.sns.dto.member.MemberBoardDto;
-import world.meta.sns.dto.member.MemberDto;
-import world.meta.sns.entity.Board;
-import world.meta.sns.entity.Member;
-import world.meta.sns.repository.board.BoardRepository;
-import world.meta.sns.repository.comment.CommentRepository;
-import world.meta.sns.repository.member.MemberRepository;
+import world.meta.sns.aaaaaa.member.dto.MemberBoardDto;
+import world.meta.sns.aaaaaa.member.dto.MemberDto;
+import world.meta.sns.aaaaaa.board.entity.Board;
+import world.meta.sns.aaaaaa.member.entity.Member;
+import world.meta.sns.aaaaaa.board.repository.BoardRepository;
+import world.meta.sns.aaaaaa.comment.repository.CommentRepository;
+import world.meta.sns.aaaaaa.member.repository.MemberRepository;
+import world.meta.sns.aaaaaa.member.service.MemberService;
 
 import java.util.Optional;
 
