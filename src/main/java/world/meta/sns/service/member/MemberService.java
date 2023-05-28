@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.dto.member.MemberDto;
-import world.meta.sns.dto.member.MemberSaveDto;
+import world.meta.sns.dto.member.MemberJoinDto;
 import world.meta.sns.dto.member.MemberUpdateDto;
 import world.meta.sns.entity.Member;
 import world.meta.sns.form.member.MemberSearchForm;
@@ -27,6 +28,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
      * 회원 목록 조회
@@ -67,16 +69,18 @@ public class MemberService {
     /**
      * 회원 등록
      *
-     * @param memberSaveDto the member request dto
+     * @param memberJoinDto the member request dto
      */
-    public void saveMember(MemberSaveDto memberSaveDto) {
+    public void joinMember(MemberJoinDto memberJoinDto) {
 
-        Long count = memberRepository.countMemberByEmail(memberSaveDto.getEmail());
+        Long count = memberRepository.countMemberByEmail(memberJoinDto.getEmail());
         if (count > 0) {
             throw new IllegalStateException("이미 존재하는 회원입니다."); // TODO: [2023-04-25] Exception 공통 처리하기. 현재는 500 에러뜬다
         }
 
-        Member member = Member.from(memberSaveDto);
+        memberJoinDto.setPassword(bCryptPasswordEncoder.encode(memberJoinDto.getPassword()));
+
+        Member member = Member.from(memberJoinDto);
         memberRepository.save(member);
     }
 

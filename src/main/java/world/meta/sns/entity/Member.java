@@ -2,7 +2,7 @@ package world.meta.sns.entity;
 
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
-import world.meta.sns.dto.member.MemberSaveDto;
+import world.meta.sns.dto.member.MemberJoinDto;
 import world.meta.sns.dto.member.MemberUpdateDto;
 
 import javax.persistence.*;
@@ -24,7 +24,7 @@ public class Member extends BaseTimeEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = true) // TODO: [2023-05-27] false로 바꾸기
+    @Column(nullable = false) // TODO: [2023-05-27] false로 바꾸기
     private String password;
 
     @Column(nullable = true)
@@ -44,8 +44,9 @@ public class Member extends BaseTimeEntity {
         this.name = name;
     }
 
-    public Member(String email, String name) {
+    public Member(String email, String password, String name) {
         this.email = email;
+        this.password = password;
         this.name = name;
     }
 
@@ -58,10 +59,12 @@ public class Member extends BaseTimeEntity {
         this.name = memberUpdateDto.getName();
     }
 
-    public static Member from(MemberSaveDto memberSaveDto) {
+    public static Member from(MemberJoinDto memberJoinDto) {
         return Member.builder()
-                .email(memberSaveDto.getEmail())
-                .name(memberSaveDto.getName())
+                .email(memberJoinDto.getEmail())
+                .password(memberJoinDto.getPassword())
+                .role(memberJoinDto.getRole())
+//                .name(memberJoinDto.getName())
                 .build();
     }
 

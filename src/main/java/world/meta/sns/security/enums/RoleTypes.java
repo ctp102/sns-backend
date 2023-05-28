@@ -1,4 +1,4 @@
-package world.meta.sns.oauth.enums;
+package world.meta.sns.security.enums;
 
 public enum RoleTypes {
 

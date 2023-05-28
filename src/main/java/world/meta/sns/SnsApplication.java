@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import world.meta.sns.entity.Board;
 import world.meta.sns.entity.Comment;
 import world.meta.sns.entity.Member;
@@ -23,6 +24,7 @@ public class SnsApplication {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -34,9 +36,11 @@ public class SnsApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void init() throws InterruptedException {
 
+        String password = bCryptPasswordEncoder.encode("test");
+
         for (int i = 1; i <= 10; i++) {
             // 회원 생성
-            Member member = new Member("member" + i + "@gmail.com", "member" + i);
+            Member member = new Member("member" + i + "@gmail.com", password, "member" + i);
             memberRepository.save(member);
 
             for (int j = 1; j <= 5; j++) {

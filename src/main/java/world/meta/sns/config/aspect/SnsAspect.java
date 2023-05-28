@@ -25,7 +25,7 @@ public class SnsAspect {
         }
 
         long end = System.currentTimeMillis();
-        log.info("[경과 시간] {}millis", end - start);
+        log.info("[경과 시간] {} millis", end - start);
 
         return result;
     }
