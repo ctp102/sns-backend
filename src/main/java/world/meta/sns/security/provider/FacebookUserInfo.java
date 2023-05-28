@@ -1,4 +1,4 @@
-package world.meta.sns.oauth.provider;
+package world.meta.sns.security.provider;
 
 import java.util.Map;
 

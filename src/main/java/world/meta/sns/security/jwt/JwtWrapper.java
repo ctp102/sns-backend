@@ -1,4 +1,4 @@
-package world.meta.sns.oauth;
+package world.meta.sns.security.jwt;
 
 import lombok.AccessLevel;
 import lombok.Getter;

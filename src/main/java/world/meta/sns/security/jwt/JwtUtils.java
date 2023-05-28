@@ -1,4 +1,4 @@
-package world.meta.sns.oauth;
+package world.meta.sns.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -17,23 +18,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-// JwtUtils로 이름을 바꿀까?
-public class JwtFactory {
+public class JwtUtils {
 
     private final Key accessPrivateKey;
     private final Key refreshPrivateKey;
     private final Long accessExpirationMillis;
     private final Long refreshExpirationMillis;
 
-    public JwtFactory(JwtProperties jwtProperties) {
+    public JwtUtils(JwtProperties jwtProperties) {
         this.accessPrivateKey = getPrivateKey(jwtProperties.getAccessSecretKey());
         this.refreshPrivateKey = getPrivateKey(jwtProperties.getRefreshSecretKey());
         this.accessExpirationMillis = jwtProperties.getAccessLength();
         this.refreshExpirationMillis = jwtProperties.getRefreshLength();
     }
 
-    public JwtWrapper issue(String userId, List<String> roles) {
-        return new JwtWrapper(createAccessToken(userId, roles), createRefreshToken(userId));
+    public JwtWrapper issue(String email, List<String> roles) {
+        return new JwtWrapper(createAccessToken(email, roles), createRefreshToken(email));
     }
 
     public JwtWrapper reIssue(String accessToken, String refreshToken) {
@@ -70,6 +70,16 @@ public class JwtFactory {
                 .setExpiration(expirationDate)
                 .signWith(refreshPrivateKey)
                 .compact();
+    }
+
+    public ResponseCookie createRefreshCookie(String refreshToken) {
+        return ResponseCookie.from("refreshToken", refreshToken)
+                .maxAge(refreshExpirationMillis)
+                .path("/")
+                .secure(true) // https만 사용 가능
+                .sameSite("None") // csrf 공격을 방어하기 위한 옵션
+                .httpOnly(true)
+                .build();
     }
 
     private List<String> getRoleStrings(String accessToken) {
