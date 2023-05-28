@@ -2,10 +2,10 @@ package world.meta.sns.api.common.mvc;
 
 import lombok.Getter;
 
-public enum CustomCommonResultCodes implements CustomResultCodes {
+public enum CustomCommonResponseCodes implements CustomResponseCodes {
 
     OK(200, "OK"),
-    BAD_REQUEST(400, "Bad Request"),
+    BAD_REQUEST(400, "Bad Request"), // invalid-parameter
     UNAUTHORIZED(401, "Unauthorized"),
     FORBIDDEN(403, "Forbidden"),
     NOT_FOUND(404, "Not Found"),
@@ -19,13 +19,14 @@ public enum CustomCommonResultCodes implements CustomResultCodes {
     @Getter
     private final String message;
 
-    public String getCode() {
-        return this.name();
-    }
-
-    CustomCommonResultCodes(int number, String message) {
+    CustomCommonResponseCodes(int number, String message) {
         this.number = number;
         this.message = message;
+    }
+
+    @Override
+    public String getCode() {
+        return this.name();
     }
 
 }

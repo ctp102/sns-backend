@@ -19,7 +19,7 @@ public class CustomResponse {
 
     public static final class Builder {
 
-        private CustomResponseCodes responseCodes = CustomResponseCodes.OK;
+        private final CustomCommonResponseCodes responseCodes = CustomCommonResponseCodes.OK;
         private final Map<String, Object> status = new LinkedHashMap<>();
         private final Map<String, Object> data = new LinkedHashMap<>();
 
