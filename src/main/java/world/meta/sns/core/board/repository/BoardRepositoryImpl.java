@@ -11,13 +11,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import world.meta.sns.core.board.dto.BoardDto;
 import world.meta.sns.core.board.form.BoardForm;
-import world.meta.sns.dto.board.QBoardDto;
+import world.meta.sns.core.board.dto.QBoardDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static world.meta.sns.entity.QBoard.board;
-import static world.meta.sns.entity.QMember.*;
+import static world.meta.sns.core.board.entity.QBoard.board;
+import static world.meta.sns.core.member.entity.QMember.*;
 
 @RequiredArgsConstructor
 public class BoardRepositoryImpl implements BoardRepositoryCustom {

@@ -8,13 +8,12 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import world.meta.sns.core.member.entity.Member;
-import world.meta.sns.core.member.repository.MemberRepository;
 import world.meta.sns.api.security.enums.OAuth2ProviderTypes;
 import world.meta.sns.api.security.enums.RoleTypes;
-import world.meta.sns.aaaaaa.security.provider.*;
-import world.meta.sns.api.security.vo.PrincipalDetailsVO;
 import world.meta.sns.api.security.provider.*;
+import world.meta.sns.api.security.vo.PrincipalDetailsVO;
+import world.meta.sns.core.member.entity.Member;
+import world.meta.sns.core.member.repository.MemberRepository;
 
 import java.util.Map;
 import java.util.UUID;

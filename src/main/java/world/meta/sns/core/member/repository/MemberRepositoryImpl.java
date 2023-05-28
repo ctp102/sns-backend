@@ -12,7 +12,7 @@ import world.meta.sns.core.member.form.MemberSearchForm;
 
 import java.util.List;
 
-import static world.meta.sns.entity.QMember.member;
+import static world.meta.sns.core.member.entity.QMember.member;
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepositoryCustom {
