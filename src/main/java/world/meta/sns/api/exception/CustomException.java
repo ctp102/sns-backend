@@ -5,16 +5,16 @@ import lombok.Getter;
 @Getter
 public class CustomException extends RuntimeException {
 
-    protected int code;
+    protected int number;
 
     public CustomException(int code, String message) {
         super(message);
-        this.code = code;
+        this.number = code;
     }
 
     public CustomException(int code, String message, Throwable cause) {
         super(message, cause);
-        this.code = code;
+        this.number = code;
     }
 
 }

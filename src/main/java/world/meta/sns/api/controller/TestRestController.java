@@ -12,6 +12,11 @@ import world.meta.sns.api.exception.CustomUnauthorizedException;
 @RequiredArgsConstructor
 public class TestRestController {
 
+    @GetMapping("/error")
+    public String error() {
+        throw new CustomBadRequestException(CustomCommonResponseCodes.BAD_REQUEST.getNumber(), CustomCommonResponseCodes.BAD_REQUEST.getMessage());
+    }
+
     @GetMapping("/bad-request")
     public String badRequest() {
         throw new CustomBadRequestException(CustomCommonResponseCodes.BAD_REQUEST.getNumber(), CustomCommonResponseCodes.BAD_REQUEST.getMessage());

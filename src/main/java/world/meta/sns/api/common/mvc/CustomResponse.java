@@ -19,9 +19,19 @@ public class CustomResponse {
 
     public static final class Builder {
 
-        private final CustomCommonResponseCodes responseCodes = CustomCommonResponseCodes.OK;
-        private final Map<String, Object> status = new LinkedHashMap<>();
-        private final Map<String, Object> data = new LinkedHashMap<>();
+        private final CustomCommonResponseCodes responseCodes;
+        private final Map<String, Object> status;
+        private final Map<String, Object> data;
+
+        public Builder() {
+            this(CustomCommonResponseCodes.OK);
+        }
+
+        public Builder(CustomCommonResponseCodes responseCodes) {
+            this.status = new LinkedHashMap<>();
+            this.data = new LinkedHashMap<>();
+            this.responseCodes = responseCodes;
+        }
 
         public Builder addItems(Object item) {
             this.data.put("items", item != null ? List.of(item) : new ArrayList<>());
@@ -57,9 +67,9 @@ public class CustomResponse {
             return this;
         }
 
-//        public Builder addResultCodes(CustomResponseCodes customResponseCodes) {
-//            return customResponseCodes != null ? this.addData("resultType", customResponseCodes.getClass().getSimpleName()) : this;
-//        }
+        public Builder addResultCodes(CustomResponseCodes customResponseCodes) {
+            return customResponseCodes != null ? this.addData("resultType", customResponseCodes.getClass().getSimpleName()) : this;
+        }
 
         public CustomResponse build() {
             return new CustomResponse(this);
