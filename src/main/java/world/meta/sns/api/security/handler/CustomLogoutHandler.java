@@ -28,8 +28,8 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String accessToken = extractAccessToken(request);
-        log.info("[AccessToken] : {}", accessToken);
+        String accessToken = jwtUtils.extractAccessToken(request);
+        log.info("[CustomLogoutHandler] accessToken : {}", accessToken);
 
         if (isInvalidAccessToken(accessToken)) {
             return;
@@ -43,22 +43,8 @@ public class CustomLogoutHandler implements LogoutHandler {
             // accessToken add black list
             redisCacheService.addBlackList(accessToken, accessExpirationMillis);
 
-            SecurityContextHolder.clearContext();
+            SecurityContextHolder.clearContext(); // 현재 스레드만에 대한 인증 정보를 지움
         }
-    }
-
-    private String extractAccessToken(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String prefix = "bearer ";
-
-        if (StringUtils.isBlank(authorizationHeader)) {
-            return null;
-        }
-
-        if (StringUtils.isNotBlank(authorizationHeader) && StringUtils.startsWith(authorizationHeader, prefix)) {
-            authorizationHeader = authorizationHeader.replace(prefix, "");
-        }
-        return authorizationHeader;
     }
 
     private boolean hasRefreshToken(String memberEmail) {

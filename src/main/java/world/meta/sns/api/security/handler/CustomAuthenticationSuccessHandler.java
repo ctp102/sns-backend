@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import world.meta.sns.api.security.service.RedisCacheService;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.api.security.jwt.JwtUtils;
 import world.meta.sns.api.security.jwt.JwtWrapper;
@@ -17,14 +18,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 
+/**
+ * Email/PW 또는 OAuth2.0 인증 성공 시 호출되는 핸들러
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtils jwtUtils;
     private final ObjectMapper objectMapper;
+    private final RedisCacheService redisCacheService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -33,12 +39,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         Member member = principal.getMember();
 
         JwtWrapper jwtWrapper = jwtUtils.issue(member.getEmail(), List.of(member.getRole()));
+        redisCacheService.setValues(member.getEmail(), jwtWrapper.getRefreshToken(), Duration.ofDays(14));
 
         ResponseCookie refreshCookie = jwtUtils.createRefreshCookie(jwtWrapper.getRefreshToken());
 
         setAuthenticationSuccessHeader(response, refreshCookie.toString());
-
-//        objectMapper.writeValue(response.getWriter(), ResponseEntity.ok(jwtWrapper));
 
         CustomResponse customResponse = new CustomResponse.Builder()
                 .addData("accessToken", jwtWrapper.getAccessToken())
