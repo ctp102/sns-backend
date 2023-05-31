@@ -1,24 +1,30 @@
 package world.meta.sns.api.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import world.meta.sns.api.config.properties.JwtProperties;
+import world.meta.sns.api.exception.CustomUnauthorizedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
+
 @Component
+@Slf4j
 public class JwtUtils {
+
+    public static final String TOKEN_PREFIX = "Bearer ";
 
     private final Key accessPrivateKey;
     private final Key refreshPrivateKey;
@@ -102,36 +108,76 @@ public class JwtUtils {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * AccessToken 시그니처 검증 + 만료시간 체크
+     */
     public boolean isValidAccessToken(String accessToken) {
-        if (StringUtils.isNotBlank(accessToken)) {
-            try {
-                Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(accessPrivateKey).build()
-                        .parseClaimsJws(accessToken);
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(accessPrivateKey).build()
+                    .parseClaimsJws(accessToken);
 
-                return !claims.getBody().getExpiration().before(new Date());
-            } catch (ExpiredJwtException e) {
-                return false;
+            if (claims == null || claims.getBody() == null) {
+                log.info("[isValidAccessToken] 유효하지 않은 액세스 토큰 시그니처입니다.");
+                throw new CustomUnauthorizedException(MEMBER_INVALID_ACCESS_TOKEN_SIGNATURE.getNumber(), MEMBER_INVALID_ACCESS_TOKEN_SIGNATURE.getMessage());
             }
+
+            return !isExpired(claims.getBody().getExpiration());
+        } catch (Exception e) {
+            log.warn("[isValidAccessToken] 액세스 토큰 검증 도중 에러 발생", e);
+            return false;
         }
-        return false;
     }
 
-    public boolean isValidRefreshToken(String refreshToken) {
-        if (StringUtils.isNotBlank(refreshToken)) {
-            try {
-                Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(refreshPrivateKey).build()
-                        .parseClaimsJws(refreshToken);
+    private boolean isExpired(Date tokenExpiration) {
+        return tokenExpiration.before(new Date());
+    }
 
-                return !claims.getBody().getExpiration().before(new Date());
-            } catch (ExpiredJwtException e) {
-                return false;
+    /**
+     * RefreshToken 시그니처 검증과 만료시간 체크
+     */
+    public boolean isValidRefreshToken(String refreshToken) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(refreshPrivateKey).build()
+                    .parseClaimsJws(refreshToken);
+
+            if (claims == null || claims.getBody() == null) {
+                log.info("[isValidRefreshToken] 유효하지 않은 리프레시 토큰 시그니처입니다.");
+                throw new CustomUnauthorizedException(MEMBER_INVALID_REFRESH_TOKEN_SIGNATURE.getNumber(), MEMBER_INVALID_REFRESH_TOKEN_SIGNATURE.getMessage());
             }
+
+            return !isExpired(claims.getBody().getExpiration());
+        } catch (Exception e) {
+            log.warn("[isValidRefreshToken] 리프레시 토큰 검증 도중 에러 발생", e);
+            return false;
         }
-        return false;
     }
 
     private Key getPrivateKey(String privateKey) {
         return Keys.hmacShaKeyFor(privateKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * request에서 "bearer "을 제외한 순수 액세스토큰을 추출한다.
+     */
+    public String extractAccessToken(HttpServletRequest request) {
+        String authorizationHeader = getAuthorizationHeader(request);
+
+        // TODO: [2023-05-30] 추후 문자열은 상수로 빼기
+        if (StringUtils.isBlank(authorizationHeader)) {
+            throw new CustomUnauthorizedException(BLANK_AUTHORIZATION_HEADER.getNumber(), BLANK_AUTHORIZATION_HEADER.getMessage());
+        }
+
+        return authorizationHeader.startsWith(TOKEN_PREFIX) ? removeTokenPrefix(authorizationHeader) : authorizationHeader;
+    }
+
+    private String getAuthorizationHeader(HttpServletRequest request) {
+        return request.getHeader(HttpHeaders.AUTHORIZATION);
+    }
+
+    private String removeTokenPrefix(String authorizationHeader) {
+        return authorizationHeader.replace(TOKEN_PREFIX, "");
     }
 
 }

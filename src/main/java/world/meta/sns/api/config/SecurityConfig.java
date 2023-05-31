@@ -4,17 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,11 +19,14 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import world.meta.sns.api.config.properties.JwtProperties;
 import world.meta.sns.api.security.filter.JsonUsernamePasswordAuthenticationFilter;
+import world.meta.sns.api.security.filter.JwtAuthenticationFilter;
+import world.meta.sns.api.security.handler.CustomAuthenticationFailureHandler;
+import world.meta.sns.api.security.handler.CustomAuthenticationSuccessHandler;
 import world.meta.sns.api.security.handler.CustomLogoutHandler;
 import world.meta.sns.api.security.handler.CustomLogoutSuccessHandler;
 import world.meta.sns.api.security.jwt.JwtUtils;
-import world.meta.sns.api.security.handler.CustomAuthenticationFailureHandler;
-import world.meta.sns.api.security.handler.CustomAuthenticationSuccessHandler;
+import world.meta.sns.api.security.service.CustomOAuth2UserService;
+import world.meta.sns.api.security.service.CustomUserDetailsService;
 import world.meta.sns.api.security.service.RedisCacheService;
 
 @Configuration
@@ -40,20 +40,26 @@ public class SecurityConfig {
     private final JwtProperties jwtProperties;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private final UserDetailsService customUserDetailsService;
-    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
     private final RedisCacheService redisCacheService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                     .authorizeRequests()
-                    .anyRequest().permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/v1/members/join", "/api/v1/login").permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/v1/boards", "/api/v1/boards/{boardId}").permitAll()
+//                    .antMatchers(HttpMethod.POST, "/api/v1/boards", "/api/v1/boards/{boardId}/comments").authenticated()
+//                    .antMatchers(HttpMethod.PUT, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
+//                    .antMatchers(HttpMethod.DELETE, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
+                    .anyRequest().authenticated()
                 .and()
                     .formLogin().disable()
                     .httpBasic().disable()
                     .csrf().disable()
                     .addFilterAt(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(jwtAuthenticationFilter(), JsonUsernamePasswordAuthenticationFilter.class)
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .cors().configurationSource(corsConfigurationSource())
@@ -83,6 +89,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtils, objectMapper, redisCacheService, customUserDetailsService);
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
@@ -94,7 +105,7 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler(jwtUtils, objectMapper);
+        return new CustomAuthenticationSuccessHandler(jwtUtils, objectMapper, redisCacheService);
     }
 
     @Bean

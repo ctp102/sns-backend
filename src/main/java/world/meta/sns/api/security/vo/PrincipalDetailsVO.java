@@ -16,12 +16,12 @@ public class PrincipalDetailsVO implements OAuth2User, UserDetails {
     private Member member;
     private Map<String, Object> attributes;
 
-    // 일반 로그인 처리할 때 사용하는 생성자
+    // EMAIL/PW 로그인 처리 시 사용하는 생성자
     public PrincipalDetailsVO(Member member) {
         this.member = member;
     }
 
-    // OAuth2.0 인증 처리할 때 사용하는 생성자
+    // OAuth2.0 인증 처리 시 사용하는 생성자
     public PrincipalDetailsVO(Member member, Map<String, Object> attributes) {
         this.member = member;
         this.attributes = attributes;
