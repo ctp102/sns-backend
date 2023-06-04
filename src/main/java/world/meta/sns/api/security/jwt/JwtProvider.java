@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import world.meta.sns.api.config.properties.JwtProperties;
 import world.meta.sns.api.exception.CustomUnauthorizedException;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -22,16 +23,17 @@ import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 
 @Component
 @Slf4j
-public class JwtUtils {
+public class JwtProvider {
 
     public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     private final Key accessPrivateKey;
     private final Key refreshPrivateKey;
     private final Long accessExpirationMillis;
     private final Long refreshExpirationMillis;
 
-    public JwtUtils(JwtProperties jwtProperties) {
+    public JwtProvider(JwtProperties jwtProperties) {
         this.accessPrivateKey = getPrivateKey(jwtProperties.getAccessSecretKey());
         this.refreshPrivateKey = getPrivateKey(jwtProperties.getRefreshSecretKey());
         this.accessExpirationMillis = jwtProperties.getAccessLength();
@@ -78,7 +80,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public ResponseCookie createRefreshCookie(String refreshToken) {
+    public ResponseCookie createRefreshTokenCookie(String refreshToken) {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .maxAge(refreshExpirationMillis)
                 .path("/")
@@ -118,13 +120,13 @@ public class JwtUtils {
                     .parseClaimsJws(accessToken);
 
             if (claims == null || claims.getBody() == null) {
-                log.info("[isValidAccessToken] 유효하지 않은 액세스 토큰 시그니처입니다.");
+                log.error("[isValidAccessToken] 유효하지 않은 액세스 토큰 시그니처입니다.");
                 throw new CustomUnauthorizedException(MEMBER_INVALID_ACCESS_TOKEN_SIGNATURE.getNumber(), MEMBER_INVALID_ACCESS_TOKEN_SIGNATURE.getMessage());
             }
 
             return !isExpired(claims.getBody().getExpiration());
         } catch (Exception e) {
-            log.warn("[isValidAccessToken] 액세스 토큰 검증 도중 에러 발생", e);
+            log.error("[isValidAccessToken] 액세스 토큰 검증 도중 에러 발생", e);
             return false;
         }
     }
@@ -149,7 +151,7 @@ public class JwtUtils {
 
             return !isExpired(claims.getBody().getExpiration());
         } catch (Exception e) {
-            log.warn("[isValidRefreshToken] 리프레시 토큰 검증 도중 에러 발생", e);
+            log.error("[isValidRefreshToken] 리프레시 토큰 검증 도중 에러 발생", e);
             return false;
         }
     }
@@ -161,14 +163,23 @@ public class JwtUtils {
     /**
      * request에서 "bearer "을 제외한 순수 액세스토큰을 추출한다.
      */
-    public String extractAccessToken(HttpServletRequest request) {
+    public String extractAccessTokenFromHeader(HttpServletRequest request) {
         String authorizationHeader = getAuthorizationHeader(request);
 
         if (StringUtils.isBlank(authorizationHeader)) {
-            throw new CustomUnauthorizedException(BLANK_AUTHORIZATION_HEADER.getNumber(), BLANK_AUTHORIZATION_HEADER.getMessage());
+            return "";
+//            throw new CustomUnauthorizedException(BLANK_AUTHORIZATION_HEADER.getNumber(), BLANK_AUTHORIZATION_HEADER.getMessage());
         }
 
         return authorizationHeader.startsWith(TOKEN_PREFIX) ? removeTokenPrefix(authorizationHeader) : authorizationHeader;
+    }
+
+    public String extractRefreshTokenFromCookie(HttpServletRequest request) {
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_COOKIE_NAME))
+                .map(Cookie::getValue)
+                .toList()
+                .get(0);
     }
 
     private String getAuthorizationHeader(HttpServletRequest request) {
@@ -178,5 +189,23 @@ public class JwtUtils {
     private String removeTokenPrefix(String authorizationHeader) {
         return authorizationHeader.replace(TOKEN_PREFIX, "");
     }
+
+//    public boolean validateToken(String token) { //유효한가를 체크.
+//        try {
+//            Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+//            return true;
+//        } catch (SignatureException | MalformedJwtException e) {
+//            log.info("잘못된 JWT 서명입니다.");
+//        } catch (ExpiredJwtException e) {
+//            log.info("만료된 JWT 토큰입니다.");
+//        } catch (UnsupportedJwtException e) {
+//            log.info("지원되지 않는 JWT 토큰입니다.");
+//        } catch (IllegalArgumentException e) {
+//            log.info("JWT 토큰이 잘못되었습니다.");
+//        } catch (Exception e) {
+//            log.info("JWT에 알 수 없는 문제가 발생하였습니다");
+//        }
+//        return false;
+//    }
 
 }

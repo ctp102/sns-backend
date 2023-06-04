@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import world.meta.sns.api.security.service.RedisCacheService;
 import world.meta.sns.core.member.entity.Member;
-import world.meta.sns.api.security.jwt.JwtUtils;
+import world.meta.sns.api.security.jwt.JwtProvider;
 import world.meta.sns.api.security.jwt.JwtWrapper;
 import world.meta.sns.api.common.mvc.CustomResponse;
 import world.meta.sns.api.security.vo.PrincipalDetailsVO;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtUtils jwtUtils;
+    private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
     private final RedisCacheService redisCacheService;
 
@@ -38,10 +38,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         PrincipalDetailsVO principal = (PrincipalDetailsVO) authentication.getPrincipal();
         Member member = principal.getMember();
 
-        JwtWrapper jwtWrapper = jwtUtils.issue(member.getEmail(), List.of(member.getRole()));
-        redisCacheService.setValues(member.getEmail(), jwtWrapper.getRefreshToken(), Duration.ofDays(14));
+        JwtWrapper jwtWrapper = jwtProvider.issue(member.getEmail(), List.of(member.getRole()));
 
-        ResponseCookie refreshCookie = jwtUtils.createRefreshCookie(jwtWrapper.getRefreshToken());
+        saveRefreshTokenToRedis(member, jwtWrapper);
+
+        ResponseCookie refreshCookie = jwtProvider.createRefreshTokenCookie(jwtWrapper.getRefreshToken());
 
         setAuthenticationSuccessHeader(response, refreshCookie.toString());
 
@@ -51,6 +52,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 .build();
 
         objectMapper.writeValue(response.getWriter(), customResponse);
+    }
+
+    private void saveRefreshTokenToRedis(Member member, JwtWrapper jwtWrapper) {
+        redisCacheService.setValues(member.getEmail(), jwtWrapper.getRefreshToken(), Duration.ofDays(14));
     }
 
     private void setAuthenticationSuccessHeader(HttpServletResponse response, String cookie) {

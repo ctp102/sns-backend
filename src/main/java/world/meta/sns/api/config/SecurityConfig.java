@@ -24,7 +24,7 @@ import world.meta.sns.api.security.handler.CustomAuthenticationFailureHandler;
 import world.meta.sns.api.security.handler.CustomAuthenticationSuccessHandler;
 import world.meta.sns.api.security.handler.CustomLogoutHandler;
 import world.meta.sns.api.security.handler.CustomLogoutSuccessHandler;
-import world.meta.sns.api.security.jwt.JwtUtils;
+import world.meta.sns.api.security.jwt.JwtProvider;
 import world.meta.sns.api.security.service.CustomOAuth2UserService;
 import world.meta.sns.api.security.service.CustomUserDetailsService;
 import world.meta.sns.api.security.service.RedisCacheService;
@@ -36,7 +36,7 @@ public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
 
-    private final JwtUtils jwtUtils;
+    private final JwtProvider jwtProvider;
     private final JwtProperties jwtProperties;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -47,21 +47,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                    .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/api/v1/members/join", "/api/v1/login").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/v1/boards", "/api/v1/boards/{boardId}", "/h2-console").permitAll()
-//                    .antMatchers(HttpMethod.POST, "/api/v1/boards", "/api/v1/boards/{boardId}/comments").authenticated()
-//                    .antMatchers(HttpMethod.PUT, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
-//                    .antMatchers(HttpMethod.DELETE, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
-                    .anyRequest().authenticated()
-                .and()
                     .formLogin().disable()
                     .httpBasic().disable()
                     .csrf().disable()
-                    .addFilterAt(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                    .addFilterBefore(jwtAuthenticationFilter(), JsonUsernamePasswordAuthenticationFilter.class)
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                    .authorizeRequests()
+                    .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기 -> CORS 정책
+                    .antMatchers(HttpMethod.POST, "/api/v1/members/join", "/api/v1/login").permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/v1/boards", "/api/v1/boards/{boardId}", "/h2-console").permitAll()
+    //                    .antMatchers(HttpMethod.POST, "/api/v1/boards", "/api/v1/boards/{boardId}/comments").authenticated()
+    //                    .antMatchers(HttpMethod.PUT, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
+    //                    .antMatchers(HttpMethod.DELETE, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
+                    .anyRequest().authenticated()
+                .and()
+                    .addFilterAt(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(jwtAuthenticationFilter(), JsonUsernamePasswordAuthenticationFilter.class)
                     .cors().configurationSource(corsConfigurationSource())
                 .and()
                     .oauth2Login()
@@ -70,9 +71,13 @@ public class SecurityConfig {
                 .and()
                     .successHandler(customAuthenticationSuccessHandler())
                     .failureHandler(customAuthenticationFailureHandler())
+//                .and()
+//                    .exceptionHandling()
+//                    .authenticationEntryPoint()
+//                    .accessDeniedHandler()
                 .and()
                     .logout()
-                    .logoutUrl("/logout")
+                    .logoutUrl("/api/v1/logout")
                     .addLogoutHandler(customLogoutHandler())
                     .logoutSuccessHandler(customLogoutSuccessHandler())
                 .and()
@@ -90,7 +95,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtUtils, objectMapper, redisCacheService, customUserDetailsService);
+        return new JwtAuthenticationFilter(jwtProvider, objectMapper, redisCacheService, customUserDetailsService);
     }
 
     @Bean
@@ -105,7 +110,7 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler(jwtUtils, objectMapper, redisCacheService);
+        return new CustomAuthenticationSuccessHandler(jwtProvider, objectMapper, redisCacheService);
     }
 
     @Bean
@@ -115,7 +120,7 @@ public class SecurityConfig {
 
     @Bean
     public CustomLogoutHandler customLogoutHandler() {
-        return new CustomLogoutHandler(jwtUtils, jwtProperties, redisCacheService);
+        return new CustomLogoutHandler(jwtProvider, jwtProperties, redisCacheService);
     }
 
     @Bean
