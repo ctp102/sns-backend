@@ -9,7 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import world.meta.sns.api.common.mvc.CustomCommonResponseCodes;
 import world.meta.sns.api.common.mvc.CustomResponse;
 import world.meta.sns.api.exception.CustomUnauthorizedException;
-import world.meta.sns.api.security.jwt.JwtUtils;
+import world.meta.sns.api.security.jwt.JwtProvider;
 import world.meta.sns.api.security.jwt.JwtWrapper;
 import world.meta.sns.api.security.service.CustomUserDetailsService;
 import world.meta.sns.api.security.service.RedisCacheService;
@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
@@ -31,19 +30,25 @@ import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtils jwtUtils;
+    private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
     private final RedisCacheService redisCacheService;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
-//        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         // 필터 단에서는 예외 발생 시 ControllerAdvice가 잡지 못한다. 따라서 try ~ catch 문을 사용하여 예외를 잡아준다.
         try {
-            String accessToken = jwtUtils.extractAccessToken(request);
+            String accessToken = jwtProvider.extractAccessTokenFromHeader(request);
             log.info("[JwtAuthenticationFilter] accessToken : {}", accessToken);
+
+            if (isAnonymousMember(accessToken)) {
+                log.info("[isAnonymousMember] 익명 사용자의 접근입니다.");
+                setResponseHeader(response, HttpStatus.OK);
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             if (isAlreadyLogout(accessToken)) {
                 log.info("[isAlreadyLogout] 이미 로그아웃 처리된 액세스 토큰입니다.");
@@ -51,24 +56,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new CustomUnauthorizedException(MEMBER_ALREADY_LOGOUT_ACCESS_TOKEN.getNumber(), MEMBER_ALREADY_LOGOUT_ACCESS_TOKEN.getMessage());
             }
 
-            if (!jwtUtils.isValidAccessToken(accessToken)) {
+            if (!jwtProvider.isValidAccessToken(accessToken)) {
                 log.info("[isValidAccessToken] 액세스 토큰이 만료되었습니다.");
-                setResponseHeader(response, HttpStatus.UNAUTHORIZED);
 
-                String refreshToken = getCookieValue(request);
+                String refreshToken = jwtProvider.extractRefreshTokenFromCookie(request);
                 if (StringUtils.isBlank(refreshToken)) {
+                    setResponseHeader(response, HttpStatus.UNAUTHORIZED);
                     throw new CustomUnauthorizedException(BLANK_REFRESH_TOKEN_IN_COOKIE.getNumber(), BLANK_REFRESH_TOKEN_IN_COOKIE.getMessage());
                 }
 
-                if (!jwtUtils.isValidRefreshToken(refreshToken)) {
+                if (!jwtProvider.isValidRefreshToken(refreshToken)) {
+                    setResponseHeader(response, HttpStatus.UNAUTHORIZED);
                     throw new CustomUnauthorizedException(MEMBER_INVALID_REFRESH_TOKEN.getNumber(), MEMBER_INVALID_REFRESH_TOKEN.getMessage());
                 }
 
                 // 리프레시 토큰이 검증됐으므로 액세스 토큰 재발급
                 // 만료된 액세스 토큰이어도 액세스 토큰에서 추출한 회원 정보는 사용할 수 있다.
-                JwtWrapper newJwtWrapper = jwtUtils.reIssue(accessToken, refreshToken);
+                JwtWrapper newJwtWrapper = jwtProvider.reIssue(accessToken, refreshToken);
                 log.info("[JwtAuthenticationFilter] 액세스 토큰이 재발급 되었습니다.");
 
+                setResponseHeader(response, HttpStatus.OK);
+                
                 CustomResponse customResponse = new CustomResponse.Builder()
                         .addData("accessToken", newJwtWrapper.getAccessToken())
                         .addData("refreshToken", newJwtWrapper.getRefreshToken())
@@ -93,16 +101,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     }
 
-    private boolean isAlreadyLogout(String accessToken) {
-        return StringUtils.isNotBlank(accessToken) && redisCacheService.getValues(accessToken) != null;
+    private boolean isAnonymousMember(String accessToken) {
+        return StringUtils.isBlank(accessToken);
     }
 
-    private String getCookieValue(HttpServletRequest request) {
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals("refreshToken"))
-                .findFirst()
-                .orElseThrow(() -> new CustomUnauthorizedException(BLANK_REFRESH_TOKEN_IN_COOKIE.getNumber(), BLANK_REFRESH_TOKEN_IN_COOKIE.getMessage()))
-                .getValue();
+    private boolean isAlreadyLogout(String accessToken) {
+        return redisCacheService.getValues(accessToken) != null;
     }
 
     private void setResponseHeader(HttpServletResponse response, HttpStatus status) {

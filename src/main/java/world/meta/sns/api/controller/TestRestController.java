@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import world.meta.sns.api.common.mvc.CustomCommonResponseCodes;
 import world.meta.sns.api.exception.CustomBadRequestException;
-import world.meta.sns.api.exception.CustomForbiddenException;
+import world.meta.sns.api.exception.CustomAccessDeniedException;
 import world.meta.sns.api.exception.CustomUnauthorizedException;
 
 @RestController
@@ -27,9 +27,9 @@ public class TestRestController {
         throw new CustomUnauthorizedException(CustomCommonResponseCodes.UNAUTHORIZED.getNumber(), CustomCommonResponseCodes.UNAUTHORIZED.getMessage());
     }
 
-    @GetMapping("/forbidden")
-    public String forbiddenException() {
-        throw new CustomForbiddenException(CustomCommonResponseCodes.FORBIDDEN.getNumber(), CustomCommonResponseCodes.FORBIDDEN.getMessage());
+    @GetMapping("/access-denied")
+    public String accessDeniedException() {
+        throw new CustomAccessDeniedException(CustomCommonResponseCodes.FORBIDDEN.getNumber(), CustomCommonResponseCodes.FORBIDDEN.getMessage());
     }
 
     @GetMapping("/exception")

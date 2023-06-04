@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import world.meta.sns.api.config.properties.JwtProperties;
 import world.meta.sns.api.security.filter.JsonUsernamePasswordAuthenticationFilter;
@@ -53,13 +54,11 @@ public class SecurityConfig {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeRequests()
-                    .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기 -> CORS 정책
-                    .antMatchers(HttpMethod.POST, "/api/v1/members/join", "/api/v1/login").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/v1/boards", "/api/v1/boards/{boardId}", "/h2-console").permitAll()
-    //                    .antMatchers(HttpMethod.POST, "/api/v1/boards", "/api/v1/boards/{boardId}/comments").authenticated()
-    //                    .antMatchers(HttpMethod.PUT, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
-    //                    .antMatchers(HttpMethod.DELETE, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
-                    .anyRequest().authenticated()
+//                    .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기 -> CORS 정책
+//                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+//                    .antMatchers("/api/v1/members/join", "/api/v1/login").permitAll()
+                    .antMatchers("/**").permitAll()
+//                    .anyRequest().permitAll()
                 .and()
                     .addFilterAt(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(jwtAuthenticationFilter(), JsonUsernamePasswordAuthenticationFilter.class)

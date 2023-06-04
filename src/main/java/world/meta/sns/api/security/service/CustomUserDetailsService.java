@@ -6,9 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import world.meta.sns.api.common.enums.ErrorResponseCodes;
+import world.meta.sns.api.exception.CustomNotFoundException;
+import world.meta.sns.api.security.vo.PrincipalDetailsVO;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.repository.MemberRepository;
-import world.meta.sns.api.security.vo.PrincipalDetailsVO;
 
 @Slf4j
 @Service
@@ -21,9 +23,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member foundMember = memberRepository.findMemberByEmail(email);
 
+        // TODO: [2023-06-04] 예외를 ControllerAdvice가 잡지 못하는 이슈
         if (foundMember == null) {
-            log.info("[loadUserByUsername] [email: {}] 회원을 찾을 수 없습니다.", email); // 만약 비밀번호가 틀린거라면?
-            return null;
+            log.info("[loadUserByUsername] [email: {}] 존재하지 않는 회원입니다.", email); // 만약 비밀번호가 틀린거라면?
+            throw new CustomNotFoundException(ErrorResponseCodes.MEMBER_NOT_FOUND.getNumber(), ErrorResponseCodes.MEMBER_NOT_FOUND.getMessage());
         }
 
         return new PrincipalDetailsVO(foundMember);
