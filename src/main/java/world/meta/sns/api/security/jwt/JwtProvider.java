@@ -90,6 +90,7 @@ public class JwtProvider {
                 .build();
     }
 
+    @SuppressWarnings("unchecked")
     private List<String> getRoleStrings(String accessToken) {
         return (List<String>) Jwts.parserBuilder()
                 .setSigningKey(accessPrivateKey)
@@ -97,6 +98,7 @@ public class JwtProvider {
                 .parseClaimsJws(accessToken).getBody().get("roles");
     }
 
+    // TODO: [2023-06-04] 만료된 accessToken을 파싱하면 에러가 발생하는데..?
     public String getMemberEmailFromToken(String accessToken) {
         return (String) Jwts.parserBuilder()
                 .setSigningKey(accessPrivateKey)
@@ -110,48 +112,30 @@ public class JwtProvider {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * AccessToken 시그니처 검증 + 만료시간 체크
-     */
-    public boolean isValidAccessToken(String accessToken) {
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(accessPrivateKey).build()
-                    .parseClaimsJws(accessToken);
-
-            if (claims == null || claims.getBody() == null) {
-                log.error("[isValidAccessToken] 유효하지 않은 액세스 토큰 시그니처입니다.");
-                throw new CustomUnauthorizedException(MEMBER_INVALID_ACCESS_TOKEN_SIGNATURE.getNumber(), MEMBER_INVALID_ACCESS_TOKEN_SIGNATURE.getMessage());
-            }
-
-            return !isExpired(claims.getBody().getExpiration());
-        } catch (Exception e) {
-            log.error("[isValidAccessToken] 액세스 토큰 검증 도중 에러 발생", e);
-            return false;
-        }
-    }
-
     private boolean isExpired(Date tokenExpiration) {
         return tokenExpiration.before(new Date());
     }
 
-    /**
-     * RefreshToken 시그니처 검증과 만료시간 체크
-     */
+    public boolean isValidAccessToken(String accessToken) {
+        return isValidToken(accessToken, accessPrivateKey);
+    }
+
     public boolean isValidRefreshToken(String refreshToken) {
+        return isValidToken(refreshToken, refreshPrivateKey);
+    }
+
+    private boolean isValidToken(String token, Key privateKey) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(refreshPrivateKey).build()
-                    .parseClaimsJws(refreshToken);
-
-            if (claims == null || claims.getBody() == null) {
-                log.info("[isValidRefreshToken] 유효하지 않은 리프레시 토큰 시그니처입니다.");
-                throw new CustomUnauthorizedException(MEMBER_INVALID_REFRESH_TOKEN_SIGNATURE.getNumber(), MEMBER_INVALID_REFRESH_TOKEN_SIGNATURE.getMessage());
-            }
-
-            return !isExpired(claims.getBody().getExpiration());
-        } catch (Exception e) {
-            log.error("[isValidRefreshToken] 리프레시 토큰 검증 도중 에러 발생", e);
+            Jwts.parserBuilder()
+                    .setSigningKey(privateKey)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            log.error("Expired token: {}", token, e);
+            return false;
+        } catch (JwtException e) {
+            log.error("Invalid token: {}", token, e);
             return false;
         }
     }
@@ -168,18 +152,21 @@ public class JwtProvider {
 
         if (StringUtils.isBlank(authorizationHeader)) {
             return "";
-//            throw new CustomUnauthorizedException(BLANK_AUTHORIZATION_HEADER.getNumber(), BLANK_AUTHORIZATION_HEADER.getMessage());
         }
 
         return authorizationHeader.startsWith(TOKEN_PREFIX) ? removeTokenPrefix(authorizationHeader) : authorizationHeader;
     }
 
     public String extractRefreshTokenFromCookie(HttpServletRequest request) {
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_COOKIE_NAME))
-                .map(Cookie::getValue)
-                .toList()
-                .get(0);
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(REFRESH_TOKEN_COOKIE_NAME)) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     private String getAuthorizationHeader(HttpServletRequest request) {
@@ -206,6 +193,72 @@ public class JwtProvider {
 //            log.info("JWT에 알 수 없는 문제가 발생하였습니다");
 //        }
 //        return false;
+//    }
+
+//    /**
+//     * AccessToken 시그니처 검증 + 만료시간 체크
+//     */
+//    public boolean isValidAccessToken(String accessToken) {
+//        try {
+//            Jws<Claims> claims = Jwts.parserBuilder()
+//                    .setSigningKey(accessPrivateKey).build()
+//                    .parseClaimsJws(accessToken);
+//
+//            if (claims == null || claims.getBody() == null) {
+//                log.error("[isValidAccessToken] 유효하지 않은 액세스 토큰 시그니처입니다.");
+//                throw new CustomUnauthorizedException(MEMBER_INVALID_ACCESS_TOKEN_SIGNATURE.getNumber(), MEMBER_INVALID_ACCESS_TOKEN_SIGNATURE.getMessage());
+//            }
+//
+//            return !isExpired(claims.getBody().getExpiration());
+//        } catch (SignatureException | MalformedJwtException e) {
+//            log.error("[isValidRefreshToken] 잘못된 AccessToken Signature입니다.", e);
+//            return false;
+//        } catch (ExpiredJwtException e) {
+//            log.error("[isValidRefreshToken] 만료된 AccessToken입니다.", e);
+//            return false;
+//        } catch (UnsupportedJwtException e) {
+//            log.error("[isValidRefreshToken] 지원되지 않는 AccessToken입니다.", e);
+//            return false;
+//        } catch (IllegalArgumentException e) {
+//            log.error("[isValidRefreshToken] AccessToken이 잘못되었습니다.", e);
+//            return false;
+//        } catch (Exception e) {
+//            log.error("[isValidRefreshToken] AccessToken에 알 수 없는 문제가 발생하였습니다");
+//            return false;
+//        }
+//    }
+
+//    /**
+//     * RefreshToken 시그니처 검증과 만료시간 체크
+//     */
+//    public boolean isValidRefreshToken(String refreshToken) {
+//        try {
+//            Jws<Claims> claims = Jwts.parserBuilder()
+//                    .setSigningKey(refreshPrivateKey).build()
+//                    .parseClaimsJws(refreshToken);
+//
+//            if (claims == null || claims.getBody() == null) {
+//                log.info("[isValidRefreshToken] 유효하지 않은 리프레시 토큰 시그니처입니다.");
+//                throw new CustomUnauthorizedException(MEMBER_INVALID_REFRESH_TOKEN_SIGNATURE.getNumber(), MEMBER_INVALID_REFRESH_TOKEN_SIGNATURE.getMessage());
+//            }
+//
+//            return !isExpired(claims.getBody().getExpiration());
+//        } catch (SignatureException | MalformedJwtException e) {
+//            log.error("[isValidRefreshToken] 잘못된 RefreshToken Signature입니다.", e);
+//            return false;
+//        } catch (ExpiredJwtException e) {
+//            log.error("[isValidRefreshToken] 만료된 RefreshToken입니다.", e);
+//            return false;
+//        } catch (UnsupportedJwtException e) {
+//            log.error("[isValidRefreshToken] 지원되지 않는 RefreshToken입니다.", e);
+//            return false;
+//        } catch (IllegalArgumentException e) {
+//            log.error("[isValidRefreshToken] RefreshToken이 잘못되었습니다.", e);
+//            return false;
+//        } catch (Exception e) {
+//            log.error("[isValidRefreshToken] RefreshToken에 알 수 없는 문제가 발생하였습니다");
+//            return false;
+//        }
 //    }
 
 }

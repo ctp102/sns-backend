@@ -17,17 +17,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import world.meta.sns.api.config.properties.JwtProperties;
+import world.meta.sns.api.redis.service.RedisCacheService;
+import world.meta.sns.api.security.core.userdetails.CustomUserDetailsService;
 import world.meta.sns.api.security.filter.JsonUsernamePasswordAuthenticationFilter;
 import world.meta.sns.api.security.filter.JwtAuthenticationFilter;
+import world.meta.sns.api.security.jwt.JwtProvider;
+import world.meta.sns.api.security.oauth2.client.userinfo.CustomOAuth2UserService;
 import world.meta.sns.api.security.web.CustomAuthenticationEntryPoint;
 import world.meta.sns.api.security.web.authentication.CustomAuthenticationFailureHandler;
 import world.meta.sns.api.security.web.authentication.CustomAuthenticationSuccessHandler;
 import world.meta.sns.api.security.web.authentication.logout.CustomLogoutHandler;
 import world.meta.sns.api.security.web.authentication.logout.CustomLogoutSuccessHandler;
-import world.meta.sns.api.security.jwt.JwtProvider;
-import world.meta.sns.api.security.oauth2.client.userinfo.CustomOAuth2UserService;
-import world.meta.sns.api.security.oauth2.core.userdetails.CustomUserDetailsService;
-import world.meta.sns.api.security.service.RedisCacheService;
 
 @Configuration
 @EnableWebSecurity
@@ -55,12 +55,13 @@ public class SecurityConfig {
                     .authorizeRequests()
 //                    .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기 -> CORS 정책
 //                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-//                    .antMatchers("/api/v1/members/join", "/api/v1/login").permitAll()
-                    .antMatchers("/**").permitAll()
+                    .antMatchers("/api/v1/members/join", "/api/v1/login").permitAll()
+                    .anyRequest().hasRole("USER")
 //                    .anyRequest().permitAll()
                 .and()
-                    .addFilterAt(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(jwtAuthenticationFilter(), JsonUsernamePasswordAuthenticationFilter.class)
+//                    .addFilterBefore(filterChainExceptionHandlerFilter(), JwtAuthenticationFilter.class) // SecurityExceptionFilter 를 JwtAuthenticationFilter 앞에 두는 이유는 예외가 터지면 상위 클래스에서 처리하기 때문이다.
                     .cors().configurationSource(corsConfigurationSource())
                 .and()
                     .oauth2Login()
@@ -69,9 +70,9 @@ public class SecurityConfig {
                 .and()
                     .successHandler(customAuthenticationSuccessHandler())
                     .failureHandler(customAuthenticationFailureHandler())
-//                .and()
-//                    .exceptionHandling()
-//                    .authenticationEntryPoint()
+                .and()
+                    .exceptionHandling()
+                    .authenticationEntryPoint(customAuthenticationEntryPoint())
 //                    .accessDeniedHandler()
                 .and()
                     .logout()
@@ -128,8 +129,13 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
-        return new CustomAuthenticationEntryPoint();
+        return new CustomAuthenticationEntryPoint(objectMapper);
     }
+
+//    @Bean
+//    public FilterChainExceptionHandlerFilter filterChainExceptionHandlerFilter() {
+//        return new FilterChainExceptionHandlerFilter(objectMapper);
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

@@ -1,20 +1,19 @@
 package world.meta.sns.api.security.web.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.oauth2.sdk.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import world.meta.sns.api.common.mvc.CustomCommonResponseCodes;
+import world.meta.sns.api.common.mvc.CustomResponse;
+import world.meta.sns.api.common.utils.ResponseUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Email/PW 또는 OAuth2.0 인증 실패 시 호출되는 핸들러
@@ -26,22 +25,15 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     private final ObjectMapper objectMapper;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        setAuthenticationFailureHeader(response);
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
+        ResponseUtils.setResponseHeader(response, HttpStatus.UNAUTHORIZED);
 
-//        String errorMessage = "Invalid Username or Password";
-//        if (exception instanceof BadCredentialsException) {
-//            errorMessage = exception.getMessage();
-//        }
-//
-//        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST, errorMessage);
-//        objectMapper.writeValue(response.getWriter(), errorResponse);
-    }
+        CustomResponse customResponse = new CustomResponse.Builder(CustomCommonResponseCodes.UNAUTHORIZED)
+                .addData("number", HttpStatus.UNAUTHORIZED.value())
+                .addData("message", e.getMessage())
+                .build();
 
-    private void setAuthenticationFailureHeader(HttpServletResponse response) {
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        objectMapper.writeValue(response.getWriter(), customResponse);
     }
 
 }
