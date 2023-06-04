@@ -13,6 +13,7 @@ public class CustomResponse {
 
     public CustomResponse(Builder builder) {
         this.status.put("number", builder.responseCodes.getNumber());
+        this.status.put("code", builder.responseCodes.getCode());
         this.status.put("message", builder.responseCodes.getMessage());
         this.data = builder.data;
     }
