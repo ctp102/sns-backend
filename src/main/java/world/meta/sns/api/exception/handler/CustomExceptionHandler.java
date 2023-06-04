@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import world.meta.sns.api.common.mvc.CustomCommonResponseCodes;
 import world.meta.sns.api.common.mvc.CustomResponse;
-import world.meta.sns.api.exception.CustomBadRequestException;
-import world.meta.sns.api.exception.CustomException;
-import world.meta.sns.api.exception.CustomForbiddenException;
-import world.meta.sns.api.exception.CustomUnauthorizedException;
+import world.meta.sns.api.exception.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,10 +30,17 @@ public class CustomExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(CustomForbiddenException.class)
-    public CustomResponse forbiddenException(HttpServletRequest request, CustomForbiddenException e) {
-        log.error("[CustomForbiddenException 발생] Request URI: {}", request.getRequestURI(), e);
+    @ExceptionHandler(CustomAccessDeniedException.class)
+    public CustomResponse accessDeniedException(HttpServletRequest request, CustomAccessDeniedException e) {
+        log.error("[CustomAccessDeniedException 발생] Request URI: {}", request.getRequestURI(), e);
         return getCustomResponse(e, CustomCommonResponseCodes.FORBIDDEN);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CustomNotFoundException.class)
+    public CustomResponse notFoundException(HttpServletRequest request, CustomNotFoundException e) {
+        log.error("[CustomNotFoundException 발생] Request URI: {}", request.getRequestURI(), e);
+        return getCustomResponse(e, CustomCommonResponseCodes.NOT_FOUND);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
