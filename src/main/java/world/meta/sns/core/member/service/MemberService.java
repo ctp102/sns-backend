@@ -8,16 +8,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import world.meta.sns.api.exception.CustomAccessDeniedException;
+import world.meta.sns.core.board.repository.BoardRepository;
+import world.meta.sns.core.comment.repository.CommentRepository;
 import world.meta.sns.core.member.dto.MemberDto;
 import world.meta.sns.core.member.dto.MemberJoinDto;
 import world.meta.sns.core.member.dto.MemberUpdateDto;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.form.MemberSearchForm;
-import world.meta.sns.core.board.repository.BoardRepository;
-import world.meta.sns.core.comment.repository.CommentRepository;
 import world.meta.sns.core.member.repository.MemberRepository;
 
 import java.util.List;
+
+import static world.meta.sns.api.common.enums.ErrorResponseCodes.MEMBER_ALREADY_EXISTED;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +78,7 @@ public class MemberService {
 
         Long count = memberRepository.countMemberByEmail(memberJoinDto.getEmail());
         if (count > 0) {
-            throw new IllegalStateException("이미 존재하는 회원입니다."); // TODO: [2023-04-25] Exception 공통 처리하기. 현재는 500 에러뜬다
+            throw new CustomAccessDeniedException(MEMBER_ALREADY_EXISTED.getNumber(), MEMBER_ALREADY_EXISTED.getMessage());
         }
 
         memberJoinDto.setPassword(bCryptPasswordEncoder.encode(memberJoinDto.getPassword()));
