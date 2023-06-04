@@ -1,4 +1,4 @@
-package world.meta.sns.api.security.oauth2.core.userdetails;
+package world.meta.sns.api.security.core.userdetails;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

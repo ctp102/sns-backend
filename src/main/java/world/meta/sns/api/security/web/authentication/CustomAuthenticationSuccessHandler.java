@@ -6,12 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import world.meta.sns.api.security.service.RedisCacheService;
+import world.meta.sns.api.redis.service.RedisCacheService;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.api.security.jwt.JwtProvider;
 import world.meta.sns.api.security.jwt.JwtWrapper;
 import world.meta.sns.api.common.mvc.CustomResponse;
-import world.meta.sns.api.security.oauth2.core.userdetails.PrincipalDetails;
+import world.meta.sns.api.security.core.userdetails.PrincipalDetails;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

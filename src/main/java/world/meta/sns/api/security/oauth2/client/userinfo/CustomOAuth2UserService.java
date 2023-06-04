@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import world.meta.sns.api.security.enums.OAuth2ProviderTypes;
 import world.meta.sns.api.security.enums.RoleTypes;
 import world.meta.sns.api.security.oauth2.user.*;
-import world.meta.sns.api.security.oauth2.core.userdetails.PrincipalDetails;
+import world.meta.sns.api.security.core.userdetails.PrincipalDetails;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.repository.MemberRepository;
 
