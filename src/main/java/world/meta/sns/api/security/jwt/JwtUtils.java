@@ -164,7 +164,6 @@ public class JwtUtils {
     public String extractAccessToken(HttpServletRequest request) {
         String authorizationHeader = getAuthorizationHeader(request);
 
-        // TODO: [2023-05-30] 추후 문자열은 상수로 빼기
         if (StringUtils.isBlank(authorizationHeader)) {
             throw new CustomUnauthorizedException(BLANK_AUTHORIZATION_HEADER.getNumber(), BLANK_AUTHORIZATION_HEADER.getMessage());
         }

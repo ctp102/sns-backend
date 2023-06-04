@@ -49,7 +49,7 @@ public class SecurityConfig {
         return httpSecurity
                     .authorizeRequests()
                     .antMatchers(HttpMethod.POST, "/api/v1/members/join", "/api/v1/login").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/v1/boards", "/api/v1/boards/{boardId}").permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/v1/boards", "/api/v1/boards/{boardId}", "/h2-console").permitAll()
 //                    .antMatchers(HttpMethod.POST, "/api/v1/boards", "/api/v1/boards/{boardId}/comments").authenticated()
 //                    .antMatchers(HttpMethod.PUT, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
 //                    .antMatchers(HttpMethod.DELETE, "/api/v1/boards/{boardId}", "/api/v1/comments/{commentId}").authenticated()
