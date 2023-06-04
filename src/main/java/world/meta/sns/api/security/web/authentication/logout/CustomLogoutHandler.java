@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import world.meta.sns.api.config.properties.JwtProperties;
 import world.meta.sns.api.security.jwt.JwtProvider;
-import world.meta.sns.api.security.service.RedisCacheService;
+import world.meta.sns.api.redis.service.RedisCacheService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +31,7 @@ public class CustomLogoutHandler implements LogoutHandler {
         log.info("[CustomLogoutHandler] accessToken : {}", accessToken);
 
         if (isInvalidAccessToken(accessToken)) {
+            log.info("[isInvalidAccessToken] 액세스 토큰이 만료되었습니다.");
             return;
         }
 
@@ -43,6 +44,10 @@ public class CustomLogoutHandler implements LogoutHandler {
             redisCacheService.addBlackList(accessToken, accessExpirationMillis);
 
             SecurityContextHolder.clearContext(); // 현재 스레드만에 대한 인증 정보를 지움
+
+            log.info("[CustomLogoutHandler] 로그아웃 처리되었습니다.");
+
+            return;
         }
 
         log.info("[CustomLogoutHandler] 이미 로그아웃 처리된 액세스 토큰입니다.");
