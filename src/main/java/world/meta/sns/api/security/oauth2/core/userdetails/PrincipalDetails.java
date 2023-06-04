@@ -1,4 +1,4 @@
-package world.meta.sns.api.security.vo;
+package world.meta.sns.api.security.oauth2.core.userdetails;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,18 +11,18 @@ import java.util.Collection;
 import java.util.Map;
 
 @Getter
-public class PrincipalDetailsVO implements OAuth2User, UserDetails {
+public class PrincipalDetails implements OAuth2User, UserDetails {
 
     private Member member;
     private Map<String, Object> attributes;
 
     // EMAIL/PW 로그인 처리 시 사용하는 생성자
-    public PrincipalDetailsVO(Member member) {
+    public PrincipalDetails(Member member) {
         this.member = member;
     }
 
     // OAuth2.0 인증 처리 시 사용하는 생성자
-    public PrincipalDetailsVO(Member member, Map<String, Object> attributes) {
+    public PrincipalDetails(Member member, Map<String, Object> attributes) {
         this.member = member;
         this.attributes = attributes;
     }

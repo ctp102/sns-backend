@@ -1,4 +1,4 @@
-package world.meta.sns.api.security.provider;
+package world.meta.sns.api.security.oauth2.user;
 
 public interface OAuth2UserInfo {
 

@@ -1,4 +1,4 @@
-package world.meta.sns.api.security.service;
+package world.meta.sns.api.security.oauth2.core.userdetails;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import world.meta.sns.api.common.enums.ErrorResponseCodes;
 import world.meta.sns.api.exception.CustomNotFoundException;
-import world.meta.sns.api.security.vo.PrincipalDetailsVO;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.repository.MemberRepository;
 
@@ -29,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new CustomNotFoundException(ErrorResponseCodes.MEMBER_NOT_FOUND.getNumber(), ErrorResponseCodes.MEMBER_NOT_FOUND.getMessage());
         }
 
-        return new PrincipalDetailsVO(foundMember);
+        return new PrincipalDetails(foundMember);
     }
 
 }

@@ -1,4 +1,4 @@
-package world.meta.sns.api.security.handler;
+package world.meta.sns.api.security.web.authentication.logout;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

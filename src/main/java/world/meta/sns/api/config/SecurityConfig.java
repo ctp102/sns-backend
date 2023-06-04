@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,18 +15,18 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import world.meta.sns.api.config.properties.JwtProperties;
 import world.meta.sns.api.security.filter.JsonUsernamePasswordAuthenticationFilter;
 import world.meta.sns.api.security.filter.JwtAuthenticationFilter;
-import world.meta.sns.api.security.handler.CustomAuthenticationFailureHandler;
-import world.meta.sns.api.security.handler.CustomAuthenticationSuccessHandler;
-import world.meta.sns.api.security.handler.CustomLogoutHandler;
-import world.meta.sns.api.security.handler.CustomLogoutSuccessHandler;
+import world.meta.sns.api.security.web.CustomAuthenticationEntryPoint;
+import world.meta.sns.api.security.web.authentication.CustomAuthenticationFailureHandler;
+import world.meta.sns.api.security.web.authentication.CustomAuthenticationSuccessHandler;
+import world.meta.sns.api.security.web.authentication.logout.CustomLogoutHandler;
+import world.meta.sns.api.security.web.authentication.logout.CustomLogoutSuccessHandler;
 import world.meta.sns.api.security.jwt.JwtProvider;
-import world.meta.sns.api.security.service.CustomOAuth2UserService;
-import world.meta.sns.api.security.service.CustomUserDetailsService;
+import world.meta.sns.api.security.oauth2.client.userinfo.CustomOAuth2UserService;
+import world.meta.sns.api.security.oauth2.core.userdetails.CustomUserDetailsService;
 import world.meta.sns.api.security.service.RedisCacheService;
 
 @Configuration
@@ -125,6 +124,11 @@ public class SecurityConfig {
     @Bean
     public CustomLogoutSuccessHandler customLogoutSuccessHandler() {
         return new CustomLogoutSuccessHandler();
+    }
+
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint();
     }
 
     @Bean

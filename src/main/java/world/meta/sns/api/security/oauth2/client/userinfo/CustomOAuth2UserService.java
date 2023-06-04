@@ -1,4 +1,4 @@
-package world.meta.sns.api.security.service;
+package world.meta.sns.api.security.oauth2.client.userinfo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +10,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import world.meta.sns.api.security.enums.OAuth2ProviderTypes;
 import world.meta.sns.api.security.enums.RoleTypes;
-import world.meta.sns.api.security.provider.*;
-import world.meta.sns.api.security.vo.PrincipalDetailsVO;
+import world.meta.sns.api.security.oauth2.user.*;
+import world.meta.sns.api.security.oauth2.core.userdetails.PrincipalDetails;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.repository.MemberRepository;
 
@@ -58,10 +58,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             memberRepository.save(member);
 
-            return new PrincipalDetailsVO(member, oAuth2User.getAttributes());
+            return new PrincipalDetails(member, oAuth2User.getAttributes());
         }
 
-        return new PrincipalDetailsVO(foundMember, oAuth2User.getAttributes());
+        return new PrincipalDetails(foundMember, oAuth2User.getAttributes());
     }
 
     public OAuth2UserInfo createOAuth2UserInfo(OAuth2User oAuth2User, OAuth2ProviderTypes oAuth2ProviderTypes) {

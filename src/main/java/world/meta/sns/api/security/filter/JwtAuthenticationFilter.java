@@ -11,7 +11,7 @@ import world.meta.sns.api.common.mvc.CustomResponse;
 import world.meta.sns.api.exception.CustomUnauthorizedException;
 import world.meta.sns.api.security.jwt.JwtProvider;
 import world.meta.sns.api.security.jwt.JwtWrapper;
-import world.meta.sns.api.security.service.CustomUserDetailsService;
+import world.meta.sns.api.security.oauth2.core.userdetails.CustomUserDetailsService;
 import world.meta.sns.api.security.service.RedisCacheService;
 
 import javax.servlet.FilterChain;

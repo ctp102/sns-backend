@@ -1,4 +1,4 @@
-package world.meta.sns.api.security.handler;
+package world.meta.sns.api.security.web.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.api.security.jwt.JwtProvider;
 import world.meta.sns.api.security.jwt.JwtWrapper;
 import world.meta.sns.api.common.mvc.CustomResponse;
-import world.meta.sns.api.security.vo.PrincipalDetailsVO;
+import world.meta.sns.api.security.oauth2.core.userdetails.PrincipalDetails;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        PrincipalDetailsVO principal = (PrincipalDetailsVO) authentication.getPrincipal();
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         Member member = principal.getMember();
 
         JwtWrapper jwtWrapper = jwtProvider.issue(member.getEmail(), List.of(member.getRole()));

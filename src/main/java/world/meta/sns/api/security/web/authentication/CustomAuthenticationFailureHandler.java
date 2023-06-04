@@ -1,4 +1,4 @@
-package world.meta.sns.api.security.handler;
+package world.meta.sns.api.security.web.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.oauth2.sdk.ErrorResponse;
