@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SnsAspect {
 
-    @Around("execution(* world.meta.sns.controller..*.*(..))")
+    @Around("execution(* world.meta.sns.api.controller..*.*(..))")
     public Object doLog(ProceedingJoinPoint joinPoint) {
         long start = System.currentTimeMillis();
 
