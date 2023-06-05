@@ -67,7 +67,7 @@ public enum ErrorResponseCodes implements CustomResponseCodes {
         } else if (e instanceof InsufficientAuthenticationException) {
             return ErrorResponseCodes.MEMBER_EMPTY_EMAIL_OR_PASSWORD;
         } else if (e instanceof InternalAuthenticationServiceException) {
-            return ErrorResponseCodes.UNKNOWN;
+            return ErrorResponseCodes.MEMBER_NOT_EXISTS;
         } else if (e instanceof AuthenticationCredentialsNotFoundException) {
             return ErrorResponseCodes.MEMBER_NOT_FOUND_IN_SECURITY_CONTEXT;
         } else {
