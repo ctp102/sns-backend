@@ -24,6 +24,7 @@ import world.meta.sns.api.security.filter.JwtAuthenticationFilter;
 import world.meta.sns.api.security.jwt.JwtProvider;
 import world.meta.sns.api.security.oauth2.client.userinfo.CustomOAuth2UserService;
 import world.meta.sns.api.security.web.CustomAuthenticationEntryPoint;
+import world.meta.sns.api.security.web.access.CustomAccessDeniedHandler;
 import world.meta.sns.api.security.web.authentication.CustomAuthenticationFailureHandler;
 import world.meta.sns.api.security.web.authentication.CustomAuthenticationSuccessHandler;
 import world.meta.sns.api.security.web.authentication.logout.CustomLogoutHandler;
@@ -73,7 +74,7 @@ public class SecurityConfig {
                 .and()
                     .exceptionHandling()
                     .authenticationEntryPoint(customAuthenticationEntryPoint())
-//                    .accessDeniedHandler()
+                    .accessDeniedHandler(customAccessDeniedHandler())
                 .and()
                     .logout()
                     .logoutUrl("/api/v1/logout")
@@ -130,6 +131,11 @@ public class SecurityConfig {
     @Bean
     public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
         return new CustomAuthenticationEntryPoint(objectMapper);
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler customAccessDeniedHandler() {
+        return new CustomAccessDeniedHandler(objectMapper);
     }
 
 //    @Bean

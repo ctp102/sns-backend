@@ -20,7 +20,7 @@ import world.meta.sns.core.member.repository.MemberRepository;
 
 import java.util.List;
 
-import static world.meta.sns.api.common.enums.ErrorResponseCodes.MEMBER_ALREADY_EXISTED;
+import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 
 @Service
 @RequiredArgsConstructor

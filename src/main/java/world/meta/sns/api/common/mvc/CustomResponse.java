@@ -20,7 +20,7 @@ public class CustomResponse {
 
     public static final class Builder {
 
-        private final CustomCommonResponseCodes responseCodes;
+        private final CustomResponseCodes responseCodes;
         private final Map<String, Object> status;
         private final Map<String, Object> data;
 
@@ -28,7 +28,7 @@ public class CustomResponse {
             this(CustomCommonResponseCodes.OK);
         }
 
-        public Builder(CustomCommonResponseCodes responseCodes) {
+        public Builder(CustomResponseCodes responseCodes) {
             this.status = new LinkedHashMap<>();
             this.data = new LinkedHashMap<>();
             this.responseCodes = responseCodes;

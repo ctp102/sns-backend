@@ -81,7 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 리프레시 토큰이 검증됐으므로 액세스 토큰 재발급
             // 만료된 액세스 토큰이어도 액세스 토큰에서 추출한 회원 정보는 사용할 수 있다.
-            // TODO: [2023-06-04] reIssue 호출 시 만료시간 에러로 인해 무한 순회 에러
+            // TODO: [2023-06-04] reIssue 호출 시 만료시간 에러로 인해 무한 순회 에러 발생
             JwtWrapper newJwtWrapper = jwtProvider.reIssue(accessToken, refreshToken);
             log.info("[JwtAuthenticationFilter] 액세스 토큰이 재발급 되었습니다.");
 

@@ -31,10 +31,7 @@ public class FilterChainExceptionHandlerFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             ResponseUtils.setResponseHeader(response, HttpStatus.UNAUTHORIZED);
 
-            CustomResponse customResponse = new CustomResponse.Builder(CustomCommonResponseCodes.UNAUTHORIZED)
-                    .addData("number", HttpStatus.UNAUTHORIZED.value())
-                    .addData("message", e.getMessage())
-                    .build();
+            CustomResponse customResponse = new CustomResponse.Builder(CustomCommonResponseCodes.UNAUTHORIZED).build();
 
             objectMapper.writeValue(response.getWriter(), customResponse);
         }

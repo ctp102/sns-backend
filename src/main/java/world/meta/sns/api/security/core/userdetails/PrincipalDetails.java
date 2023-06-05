@@ -13,7 +13,7 @@ import java.util.Map;
 @Getter
 public class PrincipalDetails implements OAuth2User, UserDetails {
 
-    private Member member;
+    private final Member member;
     private Map<String, Object> attributes;
 
     // EMAIL/PW 로그인 처리 시 사용하는 생성자

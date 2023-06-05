@@ -6,10 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import world.meta.sns.api.common.enums.ErrorResponseCodes;
 import world.meta.sns.api.exception.CustomUnauthorizedException;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.repository.MemberRepository;
+
+import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 
 @Slf4j
 @Service
@@ -23,8 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         Member foundMember = memberRepository.findMemberByEmail(email);
 
         if (foundMember == null) {
-            log.info("[loadUserByUsername] [email: {}] 존재하지 않는 회원입니다.", email); // 만약 비밀번호가 틀리면 --> '401, 자격 증명에 실패하였습니다'라는 메시지가 반환됨
-            throw new CustomUnauthorizedException(ErrorResponseCodes.MEMBER_UNAUTHORIZED.getNumber(), ErrorResponseCodes.MEMBER_UNAUTHORIZED.getMessage());
+            log.info("[loadUserByUsername] [email: {}] 존재하지 않는 회원입니다.", email);
+            throw new CustomUnauthorizedException(MEMBER_NOT_EXISTS.getNumber(), MEMBER_NOT_EXISTS.getMessage());
         }
 
         return new PrincipalDetails(foundMember);

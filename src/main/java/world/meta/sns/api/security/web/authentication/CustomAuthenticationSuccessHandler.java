@@ -40,7 +40,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         JwtWrapper jwtWrapper = jwtProvider.issue(member.getEmail(), List.of(member.getRole()));
 
-        saveRefreshTokenToRedis(member, jwtWrapper);
+        saveRefreshTokenToRedis(member.getEmail(), jwtWrapper.getRefreshToken());
 
         ResponseCookie refreshCookie = jwtProvider.createRefreshTokenCookie(jwtWrapper.getRefreshToken());
 
@@ -54,8 +54,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         objectMapper.writeValue(response.getWriter(), customResponse);
     }
 
-    private void saveRefreshTokenToRedis(Member member, JwtWrapper jwtWrapper) {
-        redisCacheService.setValues(member.getEmail(), jwtWrapper.getRefreshToken(), Duration.ofDays(14));
+    private void saveRefreshTokenToRedis(String memberEmail, String refreshToken) {
+        redisCacheService.setValues(memberEmail, refreshToken, Duration.ofDays(14));
     }
 
     private void setAuthenticationSuccessHeader(HttpServletResponse response, String cookie) {

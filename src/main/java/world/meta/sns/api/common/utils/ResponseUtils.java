@@ -15,4 +15,10 @@ public class ResponseUtils {
         response.setContentType(APPLICATION_JSON_VALUE);
     }
 
+    public static void setResponseHeader(HttpServletResponse response, int statusNumber) {
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setStatus(statusNumber);
+        response.setContentType(APPLICATION_JSON_VALUE);
+    }
+
 }

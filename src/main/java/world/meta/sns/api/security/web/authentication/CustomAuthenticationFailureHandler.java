@@ -3,12 +3,10 @@ package world.meta.sns.api.security.web.authentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import world.meta.sns.api.common.mvc.CustomCommonResponseCodes;
 import world.meta.sns.api.common.mvc.CustomResponse;
-import world.meta.sns.api.common.utils.ResponseUtils;
+import world.meta.sns.api.exception.utils.ExceptionUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,13 +24,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
-        ResponseUtils.setResponseHeader(response, HttpStatus.UNAUTHORIZED);
-
-        CustomResponse customResponse = new CustomResponse.Builder(CustomCommonResponseCodes.UNAUTHORIZED)
-                .addData("number", HttpStatus.UNAUTHORIZED.value())
-                .addData("message", e.getMessage())
-                .build();
-
+        CustomResponse customResponse = ExceptionUtils.getCustomResponse(response, e);
         objectMapper.writeValue(response.getWriter(), customResponse);
     }
 

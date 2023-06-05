@@ -1,6 +1,8 @@
 package world.meta.sns.api.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -10,7 +12,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import world.meta.sns.api.config.properties.JwtProperties;
-import world.meta.sns.api.exception.CustomUnauthorizedException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 
 @Component
 @Slf4j
@@ -81,7 +80,7 @@ public class JwtProvider {
     }
 
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
-        return ResponseCookie.from("refreshToken", refreshToken)
+        return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
                 .maxAge(refreshExpirationMillis)
                 .path("/")
                 .secure(true) // https만 사용 가능
