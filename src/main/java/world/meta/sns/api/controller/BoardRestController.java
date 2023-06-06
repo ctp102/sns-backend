@@ -14,6 +14,8 @@ import world.meta.sns.core.board.dto.BoardUpdateDto;
 import world.meta.sns.core.board.form.BoardForm;
 import world.meta.sns.core.board.service.BoardService;
 
+import static world.meta.sns.api.common.enums.ErrorResponseCodes.MEMBER_RESOURCE_FORBIDDEN;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -37,10 +39,13 @@ public class BoardRestController {
     }
 
     @PostMapping("/api/v1/boards")
-    public CustomResponse saveBoard(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody BoardRequestDto requestDto) {
+    public CustomResponse saveBoard(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody BoardRequestDto boardRequestDto) {
 
-        requestDto.setMemberId(principalDetails.getMember().getId());
-        boardService.saveBoard(requestDto);
+        if (!principalDetails.getMember().getId().equals(boardRequestDto.getMemberId())) {
+            log.error("[saveBoard] 해당 사용자는 접근 권한이 없습니다.");
+            return new CustomResponse.Builder(MEMBER_RESOURCE_FORBIDDEN).build();
+        }
+        boardService.saveBoard(boardRequestDto);
 
         return new CustomResponse.Builder().build();
     }
@@ -48,6 +53,11 @@ public class BoardRestController {
     @PutMapping("/api/v1/boards/{boardId}")
     public CustomResponse updateBoard(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("boardId") Long boardId,
                                       @RequestBody BoardUpdateDto boardUpdateDto) {
+
+        if (!principalDetails.getMember().getId().equals(boardUpdateDto.getMemberId())) {
+            log.error("[updateBoard] 해당 사용자는 접근 권한이 없습니다.");
+            return new CustomResponse.Builder(MEMBER_RESOURCE_FORBIDDEN).build();
+        }
 
         boardUpdateDto.setMemberId(principalDetails.getMember().getId());
         boardService.updateBoard(boardId, boardUpdateDto);
