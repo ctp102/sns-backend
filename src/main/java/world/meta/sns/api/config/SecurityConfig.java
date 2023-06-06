@@ -56,13 +56,13 @@ public class SecurityConfig {
                     .authorizeRequests()
 //                    .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기 -> CORS 정책
 //                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                    .antMatchers("/api/v1/members/join", "/api/v1/login").permitAll()
-                    .anyRequest().hasRole("USER")
-//                    .anyRequest().permitAll()
+                    .antMatchers("/api/v1/members/join", "/api/v1/login", "/h2-console/**").permitAll()
+                    .anyRequest().hasAnyRole("USER", "ADMIN")
+                .and()
+                    .headers().frameOptions().sameOrigin() // h2-console 접근하기 위한 설정
                 .and()
                     .addFilterBefore(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(jwtAuthenticationFilter(), JsonUsernamePasswordAuthenticationFilter.class)
-//                    .addFilterBefore(filterChainExceptionHandlerFilter(), JwtAuthenticationFilter.class) // SecurityExceptionFilter 를 JwtAuthenticationFilter 앞에 두는 이유는 예외가 터지면 상위 클래스에서 처리하기 때문이다.
                     .cors().configurationSource(corsConfigurationSource())
                 .and()
                     .oauth2Login()
@@ -120,7 +120,7 @@ public class SecurityConfig {
 
     @Bean
     public CustomLogoutHandler customLogoutHandler() {
-        return new CustomLogoutHandler(jwtProvider, jwtProperties, redisCacheService);
+        return new CustomLogoutHandler(jwtProvider, objectMapper, jwtProperties, redisCacheService);
     }
 
     @Bean
