@@ -10,6 +10,10 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
+    boolean existsByCommentIdAndMemberId(Long commentId, Long memberId);
+
+    Comment findByMemberIdAndCommentId(Long memberId, Long commentId);
+
     /**
      * member id로 작성한 부모 댓글 조회
      */

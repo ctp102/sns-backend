@@ -28,10 +28,12 @@ public enum ErrorResponseCodes implements CustomResponseCodes {
 
     MEMBER_RESOURCE_FORBIDDEN                   (403, "해당 사용자는 접근 권한이 없습니다."),
     MEMBER_ALREADY_EXISTED                      (403, "이미 가입한 사용자입니다."),
+    DIFFERENT_BOARD_ID                          (403, "게시글의 작성자가 아닙니다."),
 
-    MEMBER_NOT_FOUND                            (404, "해당 사용자를 찾을 수 없습니다."),
-    BOARD_NOT_FOUND                             (404, "해당 게시글을 찾을 수 없습니다."),
-    COMMENT_NOT_FOUND                           (404, "해당 댓글을 찾을 수 없습니다."),
+    MEMBER_NOT_FOUND                            (404, "사용자를 찾을 수 없습니다."),
+    BOARD_NOT_FOUND                             (404, "게시글을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND                           (404, "댓글을 찾을 수 없습니다."),
+    PARENT_COMMENT_NOT_FOUND                    (404, "부모 댓글을 찾을 수 없습니다."),
 
     UNKNOWN                                     (500, "알 수 없는 오류가 발생했습니다.")
     ;

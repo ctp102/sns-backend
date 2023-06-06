@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import world.meta.sns.api.exception.CustomAccessDeniedException;
+import world.meta.sns.api.exception.CustomNotFoundException;
 import world.meta.sns.core.comment.dto.CommentRequestDto;
 import world.meta.sns.core.comment.dto.CommentUpdateDto;
 import world.meta.sns.core.board.entity.Board;
@@ -12,6 +14,8 @@ import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.board.repository.BoardRepository;
 import world.meta.sns.core.comment.repository.CommentRepository;
 import world.meta.sns.core.member.repository.MemberRepository;
+
+import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,25 +33,37 @@ public class CommentService {
      * @param requestDto the request dto
      */
     public void saveComment(CommentRequestDto requestDto) {
-        // 1. board 존재 유무 체크
-        Board foundBoard = boardRepository.findById(requestDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid board id"));
 
-        Member foundMember = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid member id"));
+        Long memberId = requestDto.getMemberId();
+        Long boardId = requestDto.getBoardId();
+        Long parentCommentId = requestDto.getParentCommentId();
+
+        Board foundBoard = boardRepository.findByBoardIdAndMemberId(boardId, memberId);
+        if (foundBoard == null) {
+            log.error("[saveComment] 게시글을 찾을 수 없습니다. memberId: {}, boardId: {}", memberId, boardId);
+            throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
+        }
+
+        Member foundMember = memberRepository.findById(memberId).orElse(null);
+        if (foundMember == null) {
+            log.error("[saveComment] 사용자를 찾을 수 없습니다. memberId: {}", memberId);
+            throw new CustomNotFoundException(MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
+        }
 
         Comment parentComment = null;
         // 2. 자식 댓글인지 부모 댓글인지 체크
-        if (requestDto.getParentCommentId() != null) {
-            parentComment = commentRepository.findById(requestDto.getParentCommentId()).orElse(null);
+        if (parentCommentId != null) {
+            parentComment = commentRepository.findById(parentCommentId).orElse(null);
 
             if (parentComment == null) {
-                throw new IllegalArgumentException("DB에 parentCommentId가 존재하지 않음");
+                log.error("[saveComment] 부모 댓글을 찾을 수 없습니다. parentCommentId: {}", parentCommentId);
+                throw new CustomNotFoundException(COMMENT_NOT_FOUND.getNumber(), COMMENT_NOT_FOUND.getMessage());
             }
 
             // 2-1. 부모댓글의 게시글 번호와 자식댓글의 게시글 번호 같은지 체크하기
-            if (!parentComment.getBoard().getId().equals(requestDto.getBoardId())) {
-                throw new IllegalArgumentException("부모댓글의 게시글 번호와 자식댓글의 게시글 번호가 다름");
+            if (!parentComment.getBoard().getId().equals(boardId)) {
+                log.error("[saveComment] 부모댓글의 게시글 번호와 자식댓글의 게시글 번호가 다릅니다. parentCommentId: {}, boardId: {}", parentCommentId, boardId);
+                throw new CustomAccessDeniedException(DIFFERENT_BOARD_ID.getNumber(), DIFFERENT_BOARD_ID.getMessage());
             }
         }
 
@@ -75,10 +91,10 @@ public class CommentService {
      */
     public void updateComment(Long commentId, CommentUpdateDto commentUpdateDto) {
 
-        Comment comment = commentRepository.findById(commentId).orElse(null);
-
+        Comment comment = commentRepository.findByMemberIdAndCommentId(commentId, commentUpdateDto.getMemberId());
         if (comment == null) {
-            return;
+            log.error("[updateComment] 댓글을 찾을 수 없습니다. commentId: {}", commentId);
+            throw new CustomNotFoundException(COMMENT_NOT_FOUND.getNumber(), COMMENT_NOT_FOUND.getMessage());
         }
 
         comment.update(commentUpdateDto);
@@ -89,7 +105,13 @@ public class CommentService {
      *
      * @param commentId the comment id
      */
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, Long memberId) {
+
+        if (commentRepository.existsByCommentIdAndMemberId(commentId, memberId)) {
+            log.error("[deleteComment] 댓글을 찾을 수 없습니다. commentId: {}, memberId: {}", commentId, memberId);
+            throw new CustomNotFoundException(COMMENT_NOT_FOUND.getNumber(), COMMENT_NOT_FOUND.getMessage());
+        }
+
         commentRepository.deleteChildCommentsByCommentId(commentId);  // 자식 댓글 삭제
         commentRepository.deleteCommentsByCommentId(commentId); // 부모 댓글 삭제
     }
