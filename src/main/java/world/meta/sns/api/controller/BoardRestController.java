@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import world.meta.sns.api.common.mvc.CustomResponse;
 import world.meta.sns.api.security.core.userdetails.PrincipalDetails;
+import world.meta.sns.core.board.dto.BoardDeleteDto;
 import world.meta.sns.core.board.dto.BoardDto;
 import world.meta.sns.core.board.dto.BoardRequestDto;
 import world.meta.sns.core.board.dto.BoardUpdateDto;
@@ -66,7 +67,13 @@ public class BoardRestController {
     }
 
     @DeleteMapping("/api/v1/boards/{boardId}")
-    public CustomResponse deleteBoard(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("boardId") Long boardId) {
+    public CustomResponse deleteBoard(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("boardId") Long boardId,
+                                      @RequestBody BoardDeleteDto boardDeleteDto) {
+
+        if (!principalDetails.getMember().getId().equals(boardDeleteDto.getMemberId())) {
+            log.error("[deleteBoard] 해당 사용자는 접근 권한이 없습니다.");
+            return new CustomResponse.Builder(MEMBER_RESOURCE_FORBIDDEN).build();
+        }
 
         boardService.deleteBoard(boardId, principalDetails.getMember().getId());
 
