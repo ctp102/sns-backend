@@ -104,7 +104,7 @@ public class BoardService {
      */
     public void updateBoard(Long boardId, BoardUpdateDto boardUpdateDto) {
 
-        Board foundBoard = boardRepository.findByBoardIdAndMemberId(boardId, boardUpdateDto.getMemberId());
+        Board foundBoard = boardRepository.findByIdAndMemberId(boardId, boardUpdateDto.getMemberId());
         if (foundBoard == null) {
             log.error("[updateBoard] 해당 게시글을 찾을 수 없습니다. boardId: {}, memberId: {}", boardId, boardUpdateDto.getMemberId());
             throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
@@ -121,7 +121,7 @@ public class BoardService {
      */
     public void deleteBoard(Long boardId, Long memberId) {
 
-        Board foundBoard = boardRepository.findByBoardIdAndMemberId(boardId, memberId);
+        Board foundBoard = boardRepository.findByIdAndMemberId(boardId, memberId);
         if (foundBoard == null) {
             log.error("[deleteBoard] 해당 게시글을 찾을 수 없습니다. boardId: {}, memberId: {}", boardId, memberId);
             throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());

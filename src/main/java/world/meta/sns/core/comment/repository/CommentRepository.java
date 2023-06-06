@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
-    boolean existsByCommentIdAndMemberId(Long commentId, Long memberId);
+    boolean existsByIdAndMemberId(Long commentId, Long memberId);
 
-    Comment findByMemberIdAndCommentId(Long memberId, Long commentId);
+    Comment findByIdAndMemberId(Long commentId, Long memberId);
 
     /**
      * member id로 작성한 부모 댓글 조회
