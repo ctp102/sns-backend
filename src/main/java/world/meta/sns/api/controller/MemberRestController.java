@@ -55,7 +55,7 @@ public class MemberRestController {
 
         if (principalDetails.getMember().getId().equals(memberId)) {
             log.error("[updateMember] 해당 사용자는 접근 권한이 없습니다.");
-            throw new CustomAccessDeniedException(MEMBER_RESOURCE_FORBIDDEN.getNumber(), MEMBER_RESOURCE_FORBIDDEN.getMessage());
+            return new CustomResponse.Builder(MEMBER_RESOURCE_FORBIDDEN).build();
         }
 
         memberService.updateMember(memberId, memberUpdateDto);

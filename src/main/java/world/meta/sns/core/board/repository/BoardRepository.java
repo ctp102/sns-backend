@@ -8,6 +8,8 @@ import world.meta.sns.core.board.entity.Board;
 
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardRepositoryCustom {
 
+    Board findByMemberIdAndBoardId(Long memberId, Long boardId);
+
     // comments까지 가지고 오면 성능상 이슈가 있을 것 같아 비즈니스 로직에서 처리
     @Query("select b, m from Board b " +
             "join fetch b.member m " +

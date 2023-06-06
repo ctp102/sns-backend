@@ -6,17 +6,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import world.meta.sns.api.exception.CustomNotFoundException;
 import world.meta.sns.core.board.dto.BoardDto;
 import world.meta.sns.core.board.dto.BoardRequestDto;
 import world.meta.sns.core.board.dto.BoardUpdateDto;
 import world.meta.sns.core.board.entity.Board;
-import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.board.form.BoardForm;
 import world.meta.sns.core.board.repository.BoardRepository;
 import world.meta.sns.core.comment.repository.CommentRepository;
+import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.repository.MemberRepository;
 
 import java.util.List;
+
+import static world.meta.sns.api.common.enums.ErrorResponseCodes.BOARD_NOT_FOUND;
+import static world.meta.sns.api.common.enums.ErrorResponseCodes.MEMBER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +45,10 @@ public class BoardService {
 
         // TODO: [2023-04-17] 개수가 많은 경우에는 stream.parallel() 처리 고려
         pageBoardDtos.getContent().forEach(boardDto -> {
-            Board foundBoard = boardRepository.findById(boardDto.getBoardId())
-                    .orElseThrow(() -> new IllegalStateException("해당 게시글이 존재하지 않습니다."));
-
+            Board foundBoard = boardRepository.findById(boardDto.getBoardId()).orElse(null);
+            if (foundBoard == null) {
+                throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
+            }
             BoardDto.setCommentDtos(foundBoard, boardDto);
         });
 
@@ -62,9 +67,8 @@ public class BoardService {
         Board foundBoard = boardRepository.findFetchJoinById(boardId);
 
         if (foundBoard == null) {
-            throw new IllegalStateException("해당 게시글이 존재하지 않습니다.");
+            throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
         }
-
         BoardDto boardDto = BoardDto.from(foundBoard);
         BoardDto.setCommentDtos(foundBoard, boardDto);
 
@@ -72,33 +76,18 @@ public class BoardService {
     }
 
     /**
-     * 게시글 저장
-     *
-     * @param memberId the member id
-     * @param board    the board
-     * @return the board
-     */
-    public Board saveBoard(Long memberId, Board board) {
-
-        Member foundMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalStateException("해당 회원이 존재하지 않습니다."));
-
-        foundMember.addBoard(board);
-
-        return boardRepository.save(board);
-    }
-
-    /**
-     * Save board board.
+     * 게시글 등록
      *
      * @param requestDto the request dto
      * @return the board
      */
     public Board saveBoard(BoardRequestDto requestDto) {
 
-        Member foundMember = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new IllegalStateException("해당 회원이 존재하지 않습니다."));
-
+        Member foundMember = memberRepository.findById(requestDto.getMemberId()).orElse(null);
+        if (foundMember == null) {
+            log.error("[saveBoard] 해당 사용자를 찾을 수 없습니다. memberId: {}", requestDto.getMemberId());
+            throw new CustomNotFoundException(MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
+        }
         Board board = Board.from(requestDto);
         foundMember.addBoard(board);
 
@@ -113,14 +102,13 @@ public class BoardService {
      */
     public void updateBoard(Long boardId, BoardUpdateDto boardUpdateDto) {
 
-        Board board = boardRepository.findById(boardId).orElse(null);
-
-        if (board == null) {
-            // 응답값 변경하기(404: 찾을 수 없음이라는 둥...)
-            return;
+        Board foundBoard = boardRepository.findByMemberIdAndBoardId(boardUpdateDto.getMemberId(), boardId);
+        if (foundBoard == null) {
+            log.error("[updateBoard] 해당 게시글을 찾을 수 없습니다. memberId: {}, boardId: {}", boardUpdateDto.getMemberId(), boardId);
+            throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
         }
 
-        board.update(boardUpdateDto);
+        foundBoard.update(boardUpdateDto);
     }
 
     /**
@@ -129,7 +117,13 @@ public class BoardService {
      *
      * @param boardId the board id
      */
-    public void deleteBoard(Long boardId) {
+    public void deleteBoard(Long memberId, Long boardId) {
+
+        Board foundBoard = boardRepository.findByMemberIdAndBoardId(memberId, boardId);
+        if (foundBoard == null) {
+            log.error("[deleteBoard] 해당 게시글을 찾을 수 없습니다. memberId: {}, boardId: {}", memberId, boardId);
+            throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
+        }
 
         List<Long> parentCommentIds = commentRepository.findParentCommentIdsByBoardId(boardId);
         commentRepository.deleteChildCommentsByParentCommentIds(parentCommentIds); // 자식 댓글부터 삭제해야 참조 무결성이 깨지지 않는다.

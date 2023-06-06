@@ -10,7 +10,8 @@ import java.util.Arrays;
 public enum ErrorResponseCodes implements CustomResponseCodes {
 
     MEMBER_EMPTY_EMAIL_OR_PASSWORD              (400, "이메일 또는 비밀번호를 입력해주세요."),
-    MEMBER_NOT_EXISTS                           (401, "가입하지 않은 회원입니다."),
+
+    MEMBER_NOT_EXISTS                           (401, "가입하지 않은 사용자입니다."),
     MEMBER_NOT_MATCHED_PASSWORD                 (401, "비밀번호가 일치하지 않습니다."),
     MEMBER_ACCOUNT_LOCKED                       (401, "계정이 잠겼습니다."),
     MEMBER_ACCOUNT_EXPIRED                      (401, "계정이 만료되었습니다."),
@@ -23,10 +24,14 @@ public enum ErrorResponseCodes implements CustomResponseCodes {
     MEMBER_INVALID_REFRESH_TOKEN_SIGNATURE      (401, "유효하지 않은 리프레시 토큰 시그니처입니다."),
     MEMBER_EXPIRED_REFRESH_TOKEN                (401, "만료된 리프레시 토큰입니다."),
     MEMBER_ALREADY_LOGOUT_ACCESS_TOKEN          (401, "이미 로그아웃 처리된 액세스 토큰입니다."),
-    MEMBER_ALREADY_EXISTED                      (403, "이미 가입한 회원입니다."),
-    MEMBER_RESOURCE_FORBIDDEN                   (403, "해당 사용자는 접근 권한이 없습니다."),
-
     BLANK_REFRESH_TOKEN_IN_COOKIE               (401, "요청 쿠키에 리프레시 토큰이 존재하지 않습니다."),
+
+    MEMBER_RESOURCE_FORBIDDEN                   (403, "해당 사용자는 접근 권한이 없습니다."),
+    MEMBER_ALREADY_EXISTED                      (403, "이미 가입한 사용자입니다."),
+
+    MEMBER_NOT_FOUND                            (404, "해당 사용자를 찾을 수 없습니다."),
+    BOARD_NOT_FOUND                             (404, "해당 게시글을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND                           (404, "해당 댓글을 찾을 수 없습니다."),
 
     UNKNOWN                                     (500, "알 수 없는 오류가 발생했습니다.")
     ;

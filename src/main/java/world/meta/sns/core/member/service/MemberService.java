@@ -8,7 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import world.meta.sns.api.common.enums.ErrorResponseCodes;
 import world.meta.sns.api.exception.CustomAccessDeniedException;
+import world.meta.sns.api.exception.CustomNotFoundException;
 import world.meta.sns.core.board.repository.BoardRepository;
 import world.meta.sns.core.comment.repository.CommentRepository;
 import world.meta.sns.core.member.dto.MemberDto;
@@ -98,7 +100,7 @@ public class MemberService {
         Member member = memberRepository.findById(memberId).orElse(null);
 
         if (member == null) {
-            return;
+            throw new CustomNotFoundException(ErrorResponseCodes.MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
         }
 
         member.update(memberUpdateDto); // transaction 끝나면 더티체킹 후 자동으로 update 쿼리 실행
