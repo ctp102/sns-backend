@@ -53,7 +53,7 @@ public class MemberRestController {
     public CustomResponse updateMember(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("memberId") Long memberId,
                                        @RequestBody MemberUpdateDto memberUpdateDto) {
 
-        if (principalDetails.getMember().getId().equals(memberId)) {
+        if (!principalDetails.getMember().getId().equals(memberId)) {
             log.error("[updateMember] 해당 사용자는 접근 권한이 없습니다.");
             return new CustomResponse.Builder(MEMBER_RESOURCE_FORBIDDEN).build();
         }
@@ -66,12 +66,14 @@ public class MemberRestController {
     @DeleteMapping("/api/v1/members/{memberId}")
     public CustomResponse deleteMember(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("memberId") Long memberId) {
 
-        if (principalDetails.getMember().getId().equals(memberId)) {
+        if (!principalDetails.getMember().getId().equals(memberId)) {
             log.error("[deleteMember] 해당 사용자는 접근 권한이 없습니다.");
             throw new CustomAccessDeniedException(MEMBER_RESOURCE_FORBIDDEN.getNumber(), MEMBER_RESOURCE_FORBIDDEN.getMessage());
         }
 
         memberService.deleteMember(memberId);
+        
+        // TODO: [2023-06-06] 삭제한 회원의 액세스 토큰, 리프레시 토큰 만료시키기 
 
         return new CustomResponse.Builder().build();
     }
