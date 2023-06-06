@@ -15,11 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 미사용
  * 필터 예외는 CustomAuthenticationFaulureHandler에서 처리 중
  */
 @RequiredArgsConstructor
 @Slf4j
+@Deprecated
 public class FilterChainExceptionHandlerFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper;
