@@ -65,7 +65,8 @@ public class MemberService {
         Member member = memberRepository.findById(memberId).orElse(null);
 
         if (member == null) {
-            return null;
+            log.error("[findMember] 해당 사용자를 찾을 수 없습니다. memberId: {}", memberId);
+            throw new CustomNotFoundException(ErrorResponseCodes.MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
         }
 
         return MemberDto.from(member);
@@ -80,6 +81,7 @@ public class MemberService {
 
         Long count = memberRepository.countMemberByEmail(memberJoinDto.getEmail());
         if (count > 0) {
+            log.error("[joinMember] 이미 가입한 사용자입니다. email: {}", memberJoinDto.getEmail());
             throw new CustomAccessDeniedException(MEMBER_ALREADY_EXISTED.getNumber(), MEMBER_ALREADY_EXISTED.getMessage());
         }
 
@@ -100,6 +102,7 @@ public class MemberService {
         Member member = memberRepository.findById(memberId).orElse(null);
 
         if (member == null) {
+            log.error("[updateMember] 해당 사용자를 찾을 수 없습니다. memberId: {}", memberId);
             throw new CustomNotFoundException(ErrorResponseCodes.MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
         }
 

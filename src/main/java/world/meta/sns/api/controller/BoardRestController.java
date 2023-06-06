@@ -58,7 +58,7 @@ public class BoardRestController {
     @DeleteMapping("/api/v1/boards/{boardId}")
     public CustomResponse deleteBoard(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("boardId") Long boardId) {
 
-        boardService.deleteBoard(principalDetails.getMember().getId(), boardId);
+        boardService.deleteBoard(boardId, principalDetails.getMember().getId());
 
         return new CustomResponse.Builder().build();
     }
