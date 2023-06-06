@@ -38,7 +38,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         Member member = principal.getMember();
 
-        JwtWrapper jwtWrapper = jwtProvider.issue(member.getEmail(), List.of(member.getRole()));
+        JwtWrapper jwtWrapper = jwtProvider.issue(member.getEmail(), List.of(member.getRole().getKey()));
 
         saveRefreshTokenToRedis(member.getEmail(), jwtWrapper.getRefreshToken());
 

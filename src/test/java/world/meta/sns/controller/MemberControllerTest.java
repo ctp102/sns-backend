@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import world.meta.sns.core.member.dto.MemberJoinDto;
 import world.meta.sns.core.member.dto.MemberUpdateDto;
+import world.meta.sns.core.member.enums.RoleTypes;
 import world.meta.sns.core.member.form.MemberSearchForm;
 import world.meta.sns.core.member.service.MemberService;
 
@@ -56,7 +57,7 @@ public class MemberControllerTest {
     void saveMember() throws Exception {
         String email = "test999@naver.com";
         String password = "test";
-        String role = "ROLE_USER";
+        RoleTypes role = RoleTypes.USER;
         MemberJoinDto memberJoinDto = new MemberJoinDto(email, password, role);
 
         mockMvc.perform(post("/api/v1/members")

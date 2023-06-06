@@ -9,10 +9,10 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import world.meta.sns.api.security.enums.OAuth2ProviderTypes;
-import world.meta.sns.api.security.enums.RoleTypes;
 import world.meta.sns.api.security.oauth2.user.*;
 import world.meta.sns.api.security.core.userdetails.PrincipalDetails;
 import world.meta.sns.core.member.entity.Member;
+import world.meta.sns.core.member.enums.RoleTypes;
 import world.meta.sns.core.member.repository.MemberRepository;
 
 import java.util.Map;
@@ -45,7 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String providerId   = oAuth2UserInfo.getProviderId();
         String email        = oAuth2UserInfo.getEmail();
         String password     = passwordEncoder.encode(UUID.randomUUID().toString()); // OAuth2.0에서는 비밀번호를 사용하지 않으므로 랜덤 비밀번호 저장
-        String role         = RoleTypes.ROLE_USER.name();
+        RoleTypes role      = RoleTypes.USER; // 관리자로 가입하려면 직접 가입해야 함
 
         Member foundMember = memberRepository.findMemberByEmail(email);
         if (foundMember == null) {

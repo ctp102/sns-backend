@@ -35,7 +35,7 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(member::getRole);
+        authorities.add(() -> member.getRole().getKey());
         return authorities;
     }
 

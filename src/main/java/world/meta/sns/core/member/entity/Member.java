@@ -2,10 +2,12 @@ package world.meta.sns.core.member.entity;
 
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.ColumnDefault;
 import world.meta.sns.core.member.dto.MemberJoinDto;
 import world.meta.sns.core.member.dto.MemberUpdateDto;
 import world.meta.sns.api.common.entity.BaseTimeEntity;
 import world.meta.sns.core.board.entity.Board;
+import world.meta.sns.core.member.enums.RoleTypes;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -23,17 +25,20 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false) // TODO: [2023-05-27] false로 바꾸기
+    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
+    @ColumnDefault("'TEMP'")
     private String name;
 
-    @Column(nullable = true) // TODO: [2023-05-27] false로 바꾸기
-    private String role; // ROLE_USER, ROLE_ADMIN
+    @Column(nullable = false)
+    @ColumnDefault("'USER'")
+    @Enumerated(EnumType.STRING)
+    private RoleTypes role;
 
     private String provider;   // google, facebook...
     private String providerId; // oauth2 로그인하면 받는 id
@@ -66,7 +71,7 @@ public class Member extends BaseTimeEntity {
                 .email(memberJoinDto.getEmail())
                 .password(memberJoinDto.getPassword())
                 .role(memberJoinDto.getRole())
-//                .name(memberJoinDto.getName())
+                .name("하드코딩")
                 .build();
     }
 

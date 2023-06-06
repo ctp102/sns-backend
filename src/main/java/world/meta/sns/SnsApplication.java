@@ -12,6 +12,7 @@ import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.board.enums.Category;
 import world.meta.sns.core.board.repository.BoardRepository;
 import world.meta.sns.core.comment.repository.CommentRepository;
+import world.meta.sns.core.member.enums.RoleTypes;
 import world.meta.sns.core.member.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
@@ -41,6 +42,7 @@ public class SnsApplication {
         for (int i = 1; i <= 10; i++) {
             // 회원 생성
             Member member = new Member("member" + i + "@gmail.com", password, "member" + i);
+            member.setRole(RoleTypes.USER);
             memberRepository.save(member);
 
             for (int j = 1; j <= 5; j++) {
