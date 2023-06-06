@@ -30,24 +30,23 @@ public class CommentService {
     /**
      * 댓글 등록
      *
-     * @param requestDto the request dto
+     * @param commentRequestDto the request dto
      */
-    public void saveComment(CommentRequestDto requestDto) {
+    public void saveComment(Long boardId, CommentRequestDto commentRequestDto) {
 
-        Long memberId = requestDto.getMemberId();
-        Long boardId = requestDto.getBoardId();
-        Long parentCommentId = requestDto.getParentCommentId();
-
-        Board foundBoard = boardRepository.findByIdAndMemberId(boardId, memberId);
-        if (foundBoard == null) {
-            log.error("[saveComment] 게시글을 찾을 수 없습니다. memberId: {}, boardId: {}", memberId, boardId);
-            throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
-        }
+        Long memberId = commentRequestDto.getMemberId();
+        Long parentCommentId = commentRequestDto.getParentCommentId();
 
         Member foundMember = memberRepository.findById(memberId).orElse(null);
         if (foundMember == null) {
             log.error("[saveComment] 사용자를 찾을 수 없습니다. memberId: {}", memberId);
             throw new CustomNotFoundException(MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
+        }
+
+        Board foundBoard = boardRepository.findById(boardId).orElse(null);
+        if (foundBoard == null) {
+            log.error("[saveComment] 게시글을 찾을 수 없습니다. boardId: {}", boardId);
+            throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
         }
 
         Comment parentComment = null;
@@ -71,7 +70,7 @@ public class CommentService {
         Comment comment = Comment.builder()
                 .board(foundBoard)
                 .member(foundMember)
-                .content(requestDto.getContent())
+                .content(commentRequestDto.getContent())
                 .build();
 
         if (parentComment != null) {
@@ -93,7 +92,7 @@ public class CommentService {
 
         Comment comment = commentRepository.findByIdAndMemberId(commentId, commentUpdateDto.getMemberId());
         if (comment == null) {
-            log.error("[updateComment] 댓글을 찾을 수 없습니다. commentId: {}", commentId);
+            log.error("[updateComment] 해당 회원이 작성한 댓글을 찾을 수 없습니다. commentId: {}", commentId);
             throw new CustomNotFoundException(COMMENT_NOT_FOUND.getNumber(), COMMENT_NOT_FOUND.getMessage());
         }
 
@@ -107,8 +106,8 @@ public class CommentService {
      */
     public void deleteComment(Long commentId, Long memberId) {
 
-        if (commentRepository.existsByIdAndMemberId(commentId, memberId)) {
-            log.error("[deleteComment] 댓글을 찾을 수 없습니다. commentId: {}, memberId: {}", commentId, memberId);
+        if (!commentRepository.existsByIdAndMemberId(commentId, memberId)) {
+            log.error("[deleteComment] 해당 회원이 작성한 댓글을 찾을 수 없습니다. commentId: {}, memberId: {}", commentId, memberId);
             throw new CustomNotFoundException(COMMENT_NOT_FOUND.getNumber(), COMMENT_NOT_FOUND.getMessage());
         }
 
