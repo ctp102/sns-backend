@@ -24,9 +24,10 @@ public enum ErrorResponseCodes implements CustomResponseCodes {
     MEMBER_EXPIRED_REFRESH_TOKEN                (401, "만료된 리프레시 토큰입니다."),
     MEMBER_ALREADY_LOGOUT_ACCESS_TOKEN          (401, "이미 로그아웃 처리된 액세스 토큰입니다."),
     MEMBER_ALREADY_EXISTED                      (403, "이미 가입한 회원입니다."),
-    MEMBER_FORBIDDEN                            (403, "해당 사용자는 접근 권한이 없습니다."),
+    MEMBER_RESOURCE_FORBIDDEN                   (403, "해당 사용자는 접근 권한이 없습니다."),
 
     BLANK_REFRESH_TOKEN_IN_COOKIE               (401, "요청 쿠키에 리프레시 토큰이 존재하지 않습니다."),
+
     UNKNOWN                                     (500, "알 수 없는 오류가 발생했습니다.")
     ;
 

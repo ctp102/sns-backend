@@ -19,7 +19,6 @@ import world.meta.sns.api.security.core.userdetails.CustomUserDetailsService;
 import world.meta.sns.api.security.core.userdetails.PrincipalDetails;
 import world.meta.sns.api.security.jwt.JwtProvider;
 import world.meta.sns.api.security.jwt.JwtWrapper;
-import world.meta.sns.core.member.entity.Member;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -59,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (isAlreadyLogout(accessToken)) {
             log.info("[isAlreadyLogout] 이미 로그아웃 처리된 액세스 토큰입니다.");
             handleUnauthorizedException(response, MEMBER_ALREADY_LOGOUT_ACCESS_TOKEN);
-            return; // TODO: [2023-06-05] return이 필요없을까?
+            return; // TODO: [2023-06-06] 위에서 예외를 던지는데 왜 return이 가능한거지?
         }
 
         // 3. 액세스 토큰이 만료된 경우
@@ -96,7 +95,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         log.info("[JwtAuthenticationFilter] 인증 성공");
-
         SecurityContextHolder.getContext().setAuthentication(createAuthentication(accessToken));
 
         filterChain.doFilter(request, response);
@@ -125,9 +123,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Collection<GrantedAuthority> memberRoles = jwtProvider.getRolesFromToken(accessToken);
 
         PrincipalDetails principalDetails = (PrincipalDetails) customUserDetailsService.loadUserByUsername(memberEmail);
-        Member foundMember = principalDetails.getMember();
 
-        return new UsernamePasswordAuthenticationToken(foundMember, "", memberRoles);
+        return new UsernamePasswordAuthenticationToken(principalDetails, "", memberRoles);
     }
 
 }
