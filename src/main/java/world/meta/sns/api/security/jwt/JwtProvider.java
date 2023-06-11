@@ -1,8 +1,6 @@
 package world.meta.sns.api.security.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,11 +41,36 @@ public class JwtProvider {
         return new JwtWrapper(createAccessToken(email, roles), createRefreshToken(email));
     }
 
+    @SuppressWarnings("unchecked")
     public JwtWrapper reIssue(String accessToken, String refreshToken) {
-        String email = getMemberEmailFromToken(accessToken);
-        List<String> roles = getRoleStrings(accessToken);
+
+        ExpiredJwtException e = (ExpiredJwtException) getJwtException(accessToken);
+
+        if (e == null) {
+            log.info("[reIssue] 유효한 액세스 토큰: {}", accessToken);
+            return new JwtWrapper(accessToken, refreshToken);
+        }
+
+        String email = (String) e.getClaims().get("email");
+        List<String> roles = (List<String>) e.getClaims().get("roles");
 
         return new JwtWrapper(createAccessToken(email, roles), refreshToken);
+    }
+
+    private JwtException getJwtException(String accessToken)  {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(accessPrivateKey)
+                    .build()
+                    .parseClaimsJws(accessToken);
+        }  catch (ExpiredJwtException e) {
+            log.error("[getJwtException] Expired token: {}", accessToken, e);
+            return e;
+        } catch (JwtException e) {
+            log.error("[getJwtException] Invalid token: {}", accessToken, e);
+            return e;
+        }
+        return null;
     }
 
     public String createAccessToken(String email, List<String> roles) {
@@ -94,15 +117,18 @@ public class JwtProvider {
         return (List<String>) Jwts.parserBuilder()
                 .setSigningKey(accessPrivateKey)
                 .build()
-                .parseClaimsJws(accessToken).getBody().get("roles");
+                .parseClaimsJws(accessToken)
+                .getBody()
+                .get("roles");
     }
 
-    // TODO: [2023-06-04] 만료된 accessToken을 파싱하면 에러가 발생하는데..?
     public String getMemberEmailFromToken(String accessToken) {
         return (String) Jwts.parserBuilder()
                 .setSigningKey(accessPrivateKey)
                 .build()
-                .parseClaimsJws(accessToken).getBody().get("email");
+                .parseClaimsJws(accessToken)
+                .getBody()
+                .get("email");
     }
 
     public Collection<GrantedAuthority> getRolesFromToken(String accessToken) {
@@ -131,10 +157,10 @@ public class JwtProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            log.error("Expired token: {}", token, e);
+            log.error("[isValidToken] Expired token: {}", token, e);
             return false;
         } catch (JwtException e) {
-            log.error("Invalid token: {}", token, e);
+            log.error("[isValidToken] Invalid token: {}", token, e);
             return false;
         }
     }
