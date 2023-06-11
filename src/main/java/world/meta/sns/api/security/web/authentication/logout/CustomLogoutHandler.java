@@ -66,7 +66,6 @@ public class CustomLogoutHandler implements LogoutHandler {
         }
 
         log.error("[CustomLogoutHandler] 이미 로그아웃 처리된 액세스 토큰입니다.");
-        // TODO: [2023-06-06] 왜 여기서 커스텀 에러를 던지는데  CustomAuthenticationEntryPoint에서 InsufficientAuthenticationException이 던져지지?
         throw new CustomUnauthorizedException(MEMBER_ALREADY_LOGOUT_ACCESS_TOKEN.getNumber(), MEMBER_ALREADY_LOGOUT_ACCESS_TOKEN.getMessage());
     }
 

@@ -113,7 +113,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void handleUnauthorizedException(HttpServletResponse response, ErrorResponseCodes errorCode) {
         ResponseUtils.setResponseHeader(response, HttpStatus.UNAUTHORIZED);
-        throw new CustomUnauthorizedException(errorCode.getNumber(), errorCode.getMessage()); // TODO: [2023-06-05] 왜 여기서 다음 필터로 넘어가? throw 이후 동작과정 살펴보기
+        throw new CustomUnauthorizedException(errorCode.getNumber(), errorCode.getMessage());
     }
 
     private Authentication createAuthentication(String accessToken) {

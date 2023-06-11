@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -62,9 +63,9 @@ public class SecurityConfig {
                 .and()
                     .headers().frameOptions().sameOrigin() // h2-console 접근하기 위한 설정
                 .and()
+                    .addFilterBefore(exceptionHandlerFilter(), LogoutFilter.class) // LogoutFilter가 JwtAuthenticationFilter보다 먼저 실행되므로.
                     .addFilterBefore(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(jwtAuthenticationFilter(), JsonUsernamePasswordAuthenticationFilter.class)
-                    .addFilterBefore(exceptionHandlerFilter(), JwtAuthenticationFilter.class)
                     .cors().configurationSource(corsConfigurationSource())
                 .and()
                     .oauth2Login()
