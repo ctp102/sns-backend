@@ -72,9 +72,8 @@ public class MemberRestController {
         }
 
         memberService.deleteMember(memberId);
+        memberService.deleteMemberRefreshToken(principalDetails.getMember().getEmail());
         
-        // TODO: [2023-06-06] 삭제한 회원의 액세스 토큰, 리프레시 토큰 만료시키기 
-
         return new CustomResponse.Builder().build();
     }
 

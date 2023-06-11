@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import world.meta.sns.api.common.enums.ErrorResponseCodes;
 import world.meta.sns.api.exception.CustomAccessDeniedException;
 import world.meta.sns.api.exception.CustomNotFoundException;
+import world.meta.sns.api.redis.service.RedisCacheService;
 import world.meta.sns.core.board.repository.BoardRepository;
 import world.meta.sns.core.comment.repository.CommentRepository;
 import world.meta.sns.core.member.dto.MemberDto;
@@ -34,6 +35,7 @@ public class MemberService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RedisCacheService redisCacheService;
 
     /**
      * 회원 목록 조회
@@ -130,4 +132,12 @@ public class MemberService {
     }
 
 
+    /**
+     * 탈퇴한 회원의 refreshToken 삭제
+     *
+     * @param email
+     */
+    public void deleteMemberRefreshToken(String email) {
+        redisCacheService.deleteValues(email);
+    }
 }

@@ -137,10 +137,6 @@ public class JwtProvider {
                 .collect(Collectors.toList());
     }
 
-    private boolean isExpired(Date tokenExpiration) {
-        return tokenExpiration.before(new Date());
-    }
-
     public boolean isValidAccessToken(String accessToken) {
         return isValidToken(accessToken, accessPrivateKey);
     }
