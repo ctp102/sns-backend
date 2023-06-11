@@ -82,6 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 만료된 액세스 토큰이어도 ExpiredJwtException에서 클레임을 추출할 수 있다.
             JwtWrapper newJwtWrapper = jwtProvider.reIssue(accessToken, refreshToken);
             log.info("[JwtAuthenticationFilter] 액세스 토큰이 재발급 되었습니다.");
+            accessToken = newJwtWrapper.getAccessToken();
 
             ResponseUtils.setResponseHeader(response, HttpStatus.OK);
 
