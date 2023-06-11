@@ -58,7 +58,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (isAlreadyLogout(accessToken)) {
             log.info("[isAlreadyLogout] 이미 로그아웃 처리된 액세스 토큰입니다.");
             handleUnauthorizedException(response, MEMBER_ALREADY_LOGOUT_ACCESS_TOKEN);
-            return; // TODO: [2023-06-06] 위에서 예외를 던지는데 왜 return이 가능한거지?
         }
 
         // 3. 액세스 토큰이 만료된 경우
@@ -69,13 +68,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.isBlank(refreshToken)) {
                 // 4. 리프레시 토큰이 없는 경우
                 handleUnauthorizedException(response, BLANK_REFRESH_TOKEN_IN_COOKIE);
-                return;
             }
 
             // 5. 리프레시 토큰이 만료된 경우 --> 다시 로그인을 해야 함(클라이언트에서 알아서 로그인을 다시 하도록 유도해야 함)
             if (!jwtProvider.isValidRefreshToken(refreshToken)) {
                 handleUnauthorizedException(response, MEMBER_INVALID_REFRESH_TOKEN);
-                return;
             }
 
             // 리프레시 토큰이 검증됐으므로 액세스 토큰 재발급

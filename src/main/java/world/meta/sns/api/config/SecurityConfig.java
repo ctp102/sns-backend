@@ -19,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import world.meta.sns.api.config.properties.JwtProperties;
 import world.meta.sns.api.redis.service.RedisCacheService;
 import world.meta.sns.api.security.core.userdetails.CustomUserDetailsService;
+import world.meta.sns.api.security.filter.ExceptionHandlerFilter;
 import world.meta.sns.api.security.filter.JsonUsernamePasswordAuthenticationFilter;
 import world.meta.sns.api.security.filter.JwtAuthenticationFilter;
 import world.meta.sns.api.security.jwt.JwtProvider;
@@ -63,6 +64,7 @@ public class SecurityConfig {
                 .and()
                     .addFilterBefore(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(jwtAuthenticationFilter(), JsonUsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(exceptionHandlerFilter(), JwtAuthenticationFilter.class)
                     .cors().configurationSource(corsConfigurationSource())
                 .and()
                     .oauth2Login()
@@ -138,10 +140,10 @@ public class SecurityConfig {
         return new CustomAccessDeniedHandler(objectMapper);
     }
 
-//    @Bean
-//    public FilterChainExceptionHandlerFilter filterChainExceptionHandlerFilter() {
-//        return new FilterChainExceptionHandlerFilter(objectMapper);
-//    }
+    @Bean
+    public ExceptionHandlerFilter exceptionHandlerFilter() {
+        return new ExceptionHandlerFilter(objectMapper);
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
