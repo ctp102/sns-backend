@@ -2,11 +2,11 @@ package world.meta.sns.core.board.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import world.meta.sns.core.board.dto.BoardDto;
-import world.meta.sns.core.board.form.BoardForm;
+import world.meta.sns.core.board.entity.Board;
+import world.meta.sns.core.board.form.BoardSearchForm;
 
 public interface BoardRepositoryCustom {
 
-    Page<BoardDto> findAll(BoardForm boardForm, Pageable pageable);
+    Page<Board> findAll(BoardSearchForm boardSearchForm, Pageable pageable);
 
 }

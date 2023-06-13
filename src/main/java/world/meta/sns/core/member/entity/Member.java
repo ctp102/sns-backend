@@ -15,7 +15,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Member extends BaseTimeEntity {

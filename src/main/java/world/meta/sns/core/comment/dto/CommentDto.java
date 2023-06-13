@@ -3,6 +3,7 @@ package world.meta.sns.core.comment.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import world.meta.sns.core.comment.entity.Comment;
 
 import java.time.LocalDateTime;
@@ -12,10 +13,11 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class CommentDto {
 
-    private Long parentCommentId;
-    private Long id;
+    private Long parentCommentId; // 부모 댓글 ID
+    private Long id; // 현재 댓글 ID
 
     private String content;
     private List<CommentDto> childComments;

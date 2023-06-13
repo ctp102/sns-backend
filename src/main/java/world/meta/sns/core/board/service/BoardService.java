@@ -3,6 +3,7 @@ package world.meta.sns.core.board.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,12 +12,13 @@ import world.meta.sns.core.board.dto.BoardDto;
 import world.meta.sns.core.board.dto.BoardRequestDto;
 import world.meta.sns.core.board.dto.BoardUpdateDto;
 import world.meta.sns.core.board.entity.Board;
-import world.meta.sns.core.board.form.BoardForm;
+import world.meta.sns.core.board.form.BoardSearchForm;
 import world.meta.sns.core.board.repository.BoardRepository;
 import world.meta.sns.core.comment.repository.CommentRepository;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.repository.MemberRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static world.meta.sns.api.common.enums.ErrorResponseCodes.BOARD_NOT_FOUND;
@@ -35,25 +37,25 @@ public class BoardService {
     /**
      * 게시글 목록 조회
      *
-     * @param boardForm the board form
+     * @param boardSearchForm the board form
      * @param pageable  the pageable
      * @return the page
      */
     @Transactional(readOnly = true)
-    public Page<BoardDto> findBoardList(BoardForm boardForm, Pageable pageable) {
-        Page<BoardDto> pageBoardDtos = boardRepository.findAll(boardForm, pageable);
+    public Page<BoardDto> findBoardList(BoardSearchForm boardSearchForm, Pageable pageable) {
+
+        Page<Board> pageBoards = boardRepository.findAll(boardSearchForm, pageable);
 
         // TODO: [2023-04-17] 개수가 많은 경우에는 stream.parallel() 처리 고려
-        pageBoardDtos.getContent().forEach(boardDto -> {
-            Board foundBoard = boardRepository.findById(boardDto.getBoardId()).orElse(null);
-            if (foundBoard == null) {
-                log.error("[findBoardList] 해당 게시글을 찾을 수 없습니다. boardId: {}", boardDto.getBoardId());
-                throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
-            }
-            BoardDto.setCommentDtos(foundBoard, boardDto);
+        List<BoardDto> boardDtos = new ArrayList<>();
+
+        pageBoards.getContent().forEach(board -> {
+            BoardDto boardDto = BoardDto.from(board);
+            BoardDto.setCommentDtos(board, boardDto);
+            boardDtos.add(boardDto);
         });
 
-        return pageBoardDtos;
+        return new PageImpl<>(boardDtos, pageable, pageBoards.getTotalElements());
     }
 
     /**

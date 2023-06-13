@@ -18,7 +18,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Board extends BaseTimeEntity {

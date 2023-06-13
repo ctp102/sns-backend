@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class BoardForm {
+public class BoardSearchForm {
 
     private String title;
     private String writer;

@@ -1,4 +1,4 @@
-package world.meta.sns.repository.board;
+package world.meta.sns.core.board.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -7,12 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import world.meta.sns.core.board.dto.BoardDto;
-import world.meta.sns.core.board.form.BoardForm;
-import world.meta.sns.core.board.repository.BoardRepository;
+import world.meta.sns.core.board.entity.Board;
+import world.meta.sns.core.board.form.BoardSearchForm;
 import world.meta.sns.core.member.repository.MemberRepository;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -28,14 +25,14 @@ public class BoardRepositoryTest {
     public void findAll() throws Exception {
 
         // given
-        BoardForm boardForm = new BoardForm();
-        boardForm.setTitle("title2");
+        BoardSearchForm boardSearchForm = new BoardSearchForm();
+        boardSearchForm.setTitle("title2");
 
         // when
-        Page<BoardDto> result = boardRepository.findAll(boardForm, PageRequest.of(1, 2));
+        Page<Board> pageBoards = boardRepository.findAll(boardSearchForm, PageRequest.of(1, 2));
 
-        for (BoardDto boardDto : result) {
-            log.info("boardDto = {}", boardDto);
+        for (Board board : pageBoards) {
+            log.info("board = {}", board);
         }
 
         // then

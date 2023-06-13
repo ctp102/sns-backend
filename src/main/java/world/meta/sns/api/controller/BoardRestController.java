@@ -12,7 +12,7 @@ import world.meta.sns.core.board.dto.BoardDeleteDto;
 import world.meta.sns.core.board.dto.BoardDto;
 import world.meta.sns.core.board.dto.BoardRequestDto;
 import world.meta.sns.core.board.dto.BoardUpdateDto;
-import world.meta.sns.core.board.form.BoardForm;
+import world.meta.sns.core.board.form.BoardSearchForm;
 import world.meta.sns.core.board.service.BoardService;
 
 import static world.meta.sns.api.common.enums.ErrorResponseCodes.MEMBER_RESOURCE_FORBIDDEN;
@@ -24,18 +24,15 @@ public class BoardRestController {
 
     private final BoardService boardService;
 
-    // TODO: [2023-04-28] N+1 문제 해결하기 
     @GetMapping("/api/v1/boards")
-    public CustomResponse findBoardList(BoardForm boardForm, Pageable pageable) {
-        Page<BoardDto> items = boardService.findBoardList(boardForm, pageable);
-
+    public CustomResponse findBoardList(BoardSearchForm boardSearchForm, Pageable pageable) {
+        Page<BoardDto> items = boardService.findBoardList(boardSearchForm, pageable);
         return new CustomResponse.Builder().addItems(items).build();
     }
 
     @GetMapping("/api/v1/boards/{boardId}")
     public CustomResponse findBoard(@PathVariable("boardId") Long boardId) {
         BoardDto item = boardService.findBoard(boardId);
-
         return new CustomResponse.Builder().addItems(item).build();
     }
 
