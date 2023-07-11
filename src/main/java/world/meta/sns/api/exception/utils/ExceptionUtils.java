@@ -7,13 +7,14 @@ import world.meta.sns.api.common.utils.ResponseUtils;
 import world.meta.sns.api.exception.CustomException;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 public class ExceptionUtils {
 
     public static CustomResponse getCustomResponse(HttpServletResponse response, AuthenticationException e) {
         ErrorResponseCodes errorResponseCodes = ErrorResponseCodes.getErrorResponseCodes(e);
 
-        if (errorResponseCodes == null) {
+        if (Objects.isNull(errorResponseCodes)) {
             errorResponseCodes = ErrorResponseCodes.getErrorResponseCodesByMessage(e.getMessage());
         }
         ResponseUtils.setResponseHeader(response, errorResponseCodes.getNumber());

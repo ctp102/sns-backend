@@ -15,6 +15,8 @@ import world.meta.sns.core.board.repository.BoardRepository;
 import world.meta.sns.core.comment.repository.CommentRepository;
 import world.meta.sns.core.member.repository.MemberRepository;
 
+import java.util.Objects;
+
 import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 
 @Service
@@ -38,23 +40,23 @@ public class CommentService {
         Long parentCommentId = commentRequestDto.getParentCommentId();
 
         Member foundMember = memberRepository.findById(memberId).orElse(null);
-        if (foundMember == null) {
+        if (Objects.isNull(foundMember)) {
             log.error("[saveComment] 사용자를 찾을 수 없습니다. memberId: {}", memberId);
             throw new CustomNotFoundException(MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
         }
 
         Board foundBoard = boardRepository.findById(boardId).orElse(null);
-        if (foundBoard == null) {
+        if (Objects.isNull(foundBoard)) {
             log.error("[saveComment] 게시글을 찾을 수 없습니다. boardId: {}", boardId);
             throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
         }
 
         Comment parentComment = null;
         // 2. 자식 댓글인지 부모 댓글인지 체크
-        if (parentCommentId != null) {
+        if (Objects.nonNull(parentCommentId)) {
             parentComment = commentRepository.findById(parentCommentId).orElse(null);
 
-            if (parentComment == null) {
+            if (Objects.isNull(parentComment)) {
                 log.error("[saveComment] 부모 댓글을 찾을 수 없습니다. parentCommentId: {}", parentCommentId);
                 throw new CustomNotFoundException(COMMENT_NOT_FOUND.getNumber(), COMMENT_NOT_FOUND.getMessage());
             }
@@ -73,7 +75,7 @@ public class CommentService {
                 .content(commentRequestDto.getContent())
                 .build();
 
-        if (parentComment != null) {
+        if (Objects.nonNull(parentComment)) {
             comment.updateParentComment(parentComment);
         }
 
@@ -91,7 +93,7 @@ public class CommentService {
     public void updateComment(Long commentId, CommentUpdateDto commentUpdateDto) {
 
         Comment comment = commentRepository.findByIdAndMemberId(commentId, commentUpdateDto.getMemberId());
-        if (comment == null) {
+        if (Objects.isNull(comment)) {
             log.error("[updateComment] 해당 회원이 작성한 댓글을 찾을 수 없습니다. commentId: {}", commentId);
             throw new CustomNotFoundException(COMMENT_NOT_FOUND.getNumber(), COMMENT_NOT_FOUND.getMessage());
         }

@@ -108,7 +108,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isAlreadyLogout(String accessToken) {
-        return redisCacheService.getValues(accessToken) != null;
+        return StringUtils.isNotBlank(redisCacheService.getValues(accessToken));
     }
 
     private void handleUnauthorizedException(HttpServletResponse response, ErrorResponseCodes errorCode) {

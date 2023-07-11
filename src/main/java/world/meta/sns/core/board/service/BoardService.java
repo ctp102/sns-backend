@@ -20,6 +20,7 @@ import world.meta.sns.core.member.repository.MemberRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static world.meta.sns.api.common.enums.ErrorResponseCodes.BOARD_NOT_FOUND;
 import static world.meta.sns.api.common.enums.ErrorResponseCodes.MEMBER_NOT_FOUND;
@@ -69,7 +70,7 @@ public class BoardService {
 
         Board foundBoard = boardRepository.findFetchJoinById(boardId);
 
-        if (foundBoard == null) {
+        if (Objects.isNull(foundBoard)) {
             log.error("[findBoard] 해당 게시글을 찾을 수 없습니다. boardId: {}", boardId);
             throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
         }
@@ -88,7 +89,7 @@ public class BoardService {
     public Board saveBoard(BoardRequestDto requestDto) {
 
         Member foundMember = memberRepository.findById(requestDto.getMemberId()).orElse(null);
-        if (foundMember == null) {
+        if (Objects.isNull(foundMember)) {
             log.error("[saveBoard] 해당 사용자를 찾을 수 없습니다. memberId: {}", requestDto.getMemberId());
             throw new CustomNotFoundException(MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
         }
@@ -107,7 +108,7 @@ public class BoardService {
     public void updateBoard(Long boardId, BoardUpdateDto boardUpdateDto) {
 
         Board foundBoard = boardRepository.findByIdAndMemberId(boardId, boardUpdateDto.getMemberId());
-        if (foundBoard == null) {
+        if (Objects.isNull(foundBoard)) {
             log.error("[updateBoard] 해당 게시글을 찾을 수 없습니다. boardId: {}, memberId: {}", boardId, boardUpdateDto.getMemberId());
             throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
         }
@@ -124,7 +125,7 @@ public class BoardService {
     public void deleteBoard(Long boardId, Long memberId) {
 
         Board foundBoard = boardRepository.findByIdAndMemberId(boardId, memberId);
-        if (foundBoard == null) {
+        if (Objects.isNull(foundBoard)) {
             log.error("[deleteBoard] 해당 게시글을 찾을 수 없습니다. boardId: {}, memberId: {}", boardId, memberId);
             throw new CustomNotFoundException(BOARD_NOT_FOUND.getNumber(), BOARD_NOT_FOUND.getMessage());
         }

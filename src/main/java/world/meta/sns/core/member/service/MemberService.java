@@ -22,6 +22,7 @@ import world.meta.sns.core.member.form.MemberSearchForm;
 import world.meta.sns.core.member.repository.MemberRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 
@@ -66,7 +67,7 @@ public class MemberService {
 
         Member member = memberRepository.findById(memberId).orElse(null);
 
-        if (member == null) {
+        if (Objects.isNull(member)) {
             log.error("[findMember] 해당 사용자를 찾을 수 없습니다. memberId: {}", memberId);
             throw new CustomNotFoundException(ErrorResponseCodes.MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
         }
@@ -103,7 +104,7 @@ public class MemberService {
 
         Member member = memberRepository.findById(memberId).orElse(null);
 
-        if (member == null) {
+        if (Objects.isNull(member)) {
             log.error("[updateMember] 해당 사용자를 찾을 수 없습니다. memberId: {}", memberId);
             throw new CustomNotFoundException(ErrorResponseCodes.MEMBER_NOT_FOUND.getNumber(), MEMBER_NOT_FOUND.getMessage());
         }

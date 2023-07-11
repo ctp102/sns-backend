@@ -35,18 +35,18 @@ public class CustomResponse {
         }
 
         public Builder addItems(Object item) {
-            this.data.put("items", item != null ? List.of(item) : new ArrayList<>());
+            this.data.put("items", Objects.nonNull(item) ? List.of(item) : new ArrayList<>());
             return this;
         }
 
         public Builder addItems(Collection<?> items) {
-            this.data.put("items", items != null ? items: new ArrayList<>());
+            this.data.put("items", Objects.nonNull(items) ? items: new ArrayList<>());
             return this;
         }
 
         public Builder addItems(Page<?> items) {
-            this.data.put("items", items != null ? items.getContent() : new ArrayList<>());
-            this.data.put("paging", items != null ? Paging.from(items) : null);
+            this.data.put("items", Objects.nonNull(items) ? items.getContent() : new ArrayList<>());
+            this.data.put("paging", Objects.nonNull(items) ? Paging.from(items) : null);
             return this;
         }
 
@@ -69,7 +69,7 @@ public class CustomResponse {
         }
 
         public Builder addResultCodes(CustomResponseCodes customResponseCodes) {
-            return customResponseCodes != null ? this.addData("resultType", customResponseCodes.getClass().getSimpleName()) : this;
+            return Objects.nonNull(customResponseCodes) ? this.addData("resultType", customResponseCodes.getClass().getSimpleName()) : this;
         }
 
         public CustomResponse build() {

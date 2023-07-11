@@ -16,6 +16,7 @@ import world.meta.sns.core.member.enums.RoleTypes;
 import world.meta.sns.core.member.repository.MemberRepository;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -48,7 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         RoleTypes role      = RoleTypes.USER; // 관리자로 가입하려면 직접 가입해야 함
 
         Member foundMember = memberRepository.findMemberByEmail(email);
-        if (foundMember == null) {
+        if (Objects.isNull(foundMember)) {
             Member member = Member.builder()
                     .email(email)
                     .password(password)

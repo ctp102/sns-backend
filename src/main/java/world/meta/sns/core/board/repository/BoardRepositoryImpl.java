@@ -13,6 +13,7 @@ import world.meta.sns.core.board.form.BoardSearchForm;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static world.meta.sns.core.board.entity.QBoard.board;
 import static world.meta.sns.core.member.entity.QMember.member;
@@ -100,11 +101,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             builder.or(member.name.eq(boardSearchForm.getWriter()));
         }
 
-        if (boardSearchForm.getStartDate() != null) {
+        if (Objects.nonNull(boardSearchForm.getStartDate())) {
             builder.or(board.createdDate.goe(boardSearchForm.getStartDate()));
         }
 
-        if (boardSearchForm.getEndDate() != null) {
+        if (Objects.nonNull(boardSearchForm.getEndDate())) {
             builder.or(board.createdDate.loe(boardSearchForm.getEndDate()));
         }
 
@@ -124,11 +125,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     }
 
     public BooleanBuilder createdDateGoe(LocalDateTime startDate) {
-        return startDate != null ? new BooleanBuilder(board.createdDate.goe(startDate)) : new BooleanBuilder();
+        return Objects.nonNull(startDate) ? new BooleanBuilder(board.createdDate.goe(startDate)) : new BooleanBuilder();
     }
 
     public BooleanBuilder createdDateLoe(LocalDateTime endDate) {
-        return endDate != null ? new BooleanBuilder(board.createdDate.loe(endDate)) : new BooleanBuilder();
+        return Objects.nonNull(endDate) ? new BooleanBuilder(board.createdDate.loe(endDate)) : new BooleanBuilder();
     }
 
 }

@@ -13,6 +13,7 @@ import world.meta.sns.core.board.enums.Category;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -68,7 +69,7 @@ public class Board extends BaseTimeEntity {
             this.content = boardUpdateDto.getContent();
         }
 
-        if (boardUpdateDto.getCategory() != null) {
+        if (Objects.nonNull(boardUpdateDto.getCategory())) {
             this.category = boardUpdateDto.getCategory();
         }
     }

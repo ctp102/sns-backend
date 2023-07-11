@@ -46,7 +46,7 @@ public class JwtProvider {
 
         ExpiredJwtException e = (ExpiredJwtException) getJwtException(accessToken);
 
-        if (e == null) {
+        if (Objects.isNull(e)) {
             log.info("[reIssue] 유효한 액세스 토큰: {}", accessToken);
             return new JwtWrapper(accessToken, refreshToken);
         }
@@ -180,7 +180,7 @@ public class JwtProvider {
 
     public String extractRefreshTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
+        if (Objects.nonNull(cookies)) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(REFRESH_TOKEN_COOKIE_NAME)) {
                     return cookie.getValue();

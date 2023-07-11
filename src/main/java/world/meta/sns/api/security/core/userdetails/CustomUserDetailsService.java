@@ -10,6 +10,8 @@ import world.meta.sns.api.exception.CustomUnauthorizedException;
 import world.meta.sns.core.member.entity.Member;
 import world.meta.sns.core.member.repository.MemberRepository;
 
+import java.util.Objects;
+
 import static world.meta.sns.api.common.enums.ErrorResponseCodes.*;
 
 @Slf4j
@@ -23,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member foundMember = memberRepository.findMemberByEmail(email);
 
-        if (foundMember == null) {
+        if (Objects.isNull(foundMember)) {
             log.info("[loadUserByUsername] [email: {}] 존재하지 않는 회원입니다.", email);
             throw new CustomUnauthorizedException(MEMBER_NOT_EXISTS.getNumber(), MEMBER_NOT_EXISTS.getMessage());
         }
